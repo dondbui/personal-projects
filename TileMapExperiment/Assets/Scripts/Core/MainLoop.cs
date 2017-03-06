@@ -1,9 +1,11 @@
 ﻿/**
- * Mainloop.cs
- * 
- * <author>Don Duy Bui</author>
- * <date>March 5th, 2017</date>
- */
+* Mainloop.cs
+* 
+* <author>Don Duy Bui</author>
+* <date>March 5th, 2017</date>
+*/
+
+using core.tilesys;
 using UnityEngine;
 
 /// <summary>
@@ -15,6 +17,11 @@ public class MainLoop : MonoBehaviour {
     void Start ()
     {
         Debug.Log("Game Initializing");
+
+        TiledCSVParser csvParser = TiledCSVParser.GetInstance();
+        string[,] mapData = csvParser.ReadTiledCSVFile("MapData/map1");
+
+        
     }
     
     // Update is called once per frame
