@@ -15,8 +15,13 @@ public class MainLoop : MonoBehaviour
 {
     private const int DRAG_SPEED = 10;
 
+    /// Stores the bounding box of the world. 
+    private static Rect CAMERA_BOUND = new Rect();
+
     private Vector3 lastPosition;
     private Vector3 currPosition;
+
+    private Vector3 endPosition = new Vector3(0,0,-10);
 
     private Vector3 moveDelta;
 
@@ -32,6 +37,12 @@ public class MainLoop : MonoBehaviour
         Debug.Log("Tile at 0,31: " + mapData.GetTileAt(0, 31));
 
         // SpriteTileGenerator stg = new SpriteTileGenerator(mapData);
+
+        // Setup the bounds of the world
+        CAMERA_BOUND.x = -1;
+        CAMERA_BOUND.y = -1 - mapData.GetHeight();
+        CAMERA_BOUND.width = mapData.GetWidth();
+        CAMERA_BOUND.height = mapData.GetHeight();
 
         new TileMeshGenerator(mapData);
     }
@@ -79,7 +90,17 @@ public class MainLoop : MonoBehaviour
         moveDelta.x = -viewPortPos.x * DRAG_SPEED;
         moveDelta.y = -viewPortPos.y * DRAG_SPEED;
 
-        Camera.main.transform.Translate(moveDelta, Space.World);
+        // Attempt to predict the final position
+        float predictedX = moveDelta.x + Camera.main.transform.position.x;
+        float predictedY = moveDelta.y + Camera.main.transform.position.y;
+
+        float endXPos = Mathf.Clamp(predictedX, CAMERA_BOUND.xMin, CAMERA_BOUND.xMax);
+        float endYPos = Mathf.Clamp(predictedY, CAMERA_BOUND.yMin, CAMERA_BOUND.yMax);
+
+        endPosition.x = endXPos;
+        endPosition.y = endYPos;
+
+        Camera.main.transform.position = endPosition;
 
         // TODO: add inertia to this camera panning later. 
 
