@@ -1,9 +1,9 @@
-﻿/**
-* SpriteTileGenerator.cs
-* 
-* <author>Don Duy Bui</author>
-* <date>March 6th, 2017</date>
-*/
+﻿/// ---------------------------------------------------------------------------
+/// SpriteTileGenerator.cs
+/// 
+/// <author>Don Duy Bui</author>
+/// <date>March 6th, 2017</date>
+/// ---------------------------------------------------------------------------
 
 using System.Collections;
 using System.Collections.Generic;

@@ -1,9 +1,10 @@
-﻿/**
-* MapData.cs
-* 
-* <author>Don Duy Bui</author>
-* <date>March 6th, 2017</date>
-*/
+﻿/// ---------------------------------------------------------------------------
+/// MapData.cs
+/// 
+/// <author>Don Duy Bui</author>
+/// <date>March 6th, 2017</date>
+/// ---------------------------------------------------------------------------
+
 using UnityEngine;
 
 namespace core.tilesys

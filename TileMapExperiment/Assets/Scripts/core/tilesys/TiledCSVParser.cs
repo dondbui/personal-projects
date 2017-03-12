@@ -1,9 +1,9 @@
-﻿/**
-* CSVParser.cs
-* 
-* <author>Don Duy Bui</author>
-* <date>March 5th, 2017</date>
-*/
+﻿/// ---------------------------------------------------------------------------
+/// CSVParser.cs
+/// 
+/// <author>Don Duy Bui</author>
+/// <date>March 5th, 2017</date>
+/// ---------------------------------------------------------------------------
 
 using System;
 using UnityEngine;
