@@ -10,12 +10,18 @@ using UnityEngine;
 namespace core.tilesys
 {
     /// <summary>
-    /// 
+    /// Given the processed MapData from the tiled CSV we generate the plane
+    /// and adjust the UV map to ensure each quad has the correct tile texture
+    /// section applied to it. 
     /// </summary>
     public class TileMeshGenerator
     {
+        private const string MESH_GAME_OBJ_NAME = "MapMesh";
+
         private int NUM_TILES_X = 2;
         private int NUM_TILES_Y = 2;
+
+        private int TILE_SIZE = 1;
 
         private MapData mapData;
 
@@ -29,11 +35,12 @@ namespace core.tilesys
             GenerateMesh();
         }
 
-        // method to generate the mesh
+        /// Creates the game object, adds the mesh, all the appropriate
+        /// components and then adjusts the UV Map
         private void GenerateMesh()
         {
             GameObject mapMesh = new GameObject();
-            mapMesh.name = "MapMesh";
+            mapMesh.name = MESH_GAME_OBJ_NAME;
 
             mapMesh.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
 
@@ -50,9 +57,9 @@ namespace core.tilesys
                 for (y = 0; y < NUM_TILES_Y; y++)
                 {
                     vertices[iVertCount + 0] = new Vector3(x, y, 0); //  top left
-                    vertices[iVertCount + 1] = new Vector3(x + 1, y, 0); // top right
-                    vertices[iVertCount + 2] = new Vector3(x + 1, y + 1, 0); // bottom right
-                    vertices[iVertCount + 3] = new Vector3(x, y + 1, 0); // bottom left
+                    vertices[iVertCount + 1] = new Vector3(x + TILE_SIZE, y, 0); // top right
+                    vertices[iVertCount + 2] = new Vector3(x + TILE_SIZE, y + TILE_SIZE, 0); // bottom right
+                    vertices[iVertCount + 3] = new Vector3(x, y + TILE_SIZE, 0); // bottom left
                     iVertCount += 4;
                 }
             }
@@ -85,9 +92,9 @@ namespace core.tilesys
             MeshRenderer mr = mapMesh.AddComponent<MeshRenderer>();
             mr.material = mat;
 
-
             iVertCount = 0;
 
+            // Iterate through all of the tiles and adjust the UVs to make sure they line up.
             for (x = 0; x < NUM_TILES_X; x++)
             {
                 for (y = 0; y < NUM_TILES_Y; y++)
@@ -95,16 +102,27 @@ namespace core.tilesys
                     string tileID = mapData.GetTileAt(x, y);
                     int tileNum = int.Parse(tileID);
 
-                    UVArray[iVertCount + 0] = new Vector2(tileNum/6f, 0); //Top left of tile in atlas
-                    UVArray[iVertCount + 1] = new Vector2((tileNum + 1) / 6f, 0); //Top right of tile in atlas
-                    UVArray[iVertCount + 2] = new Vector2((tileNum + 1) / 6f, 1); //Bottom right of tile in atlas
-                    UVArray[iVertCount + 3] = new Vector2(tileNum / 6f, 1); //Bottom left of tile in atlas
+                    // Top left of tile in atlas
+                    UVArray[iVertCount + 0] = new Vector2(tileNum/6f, 0);
+
+                    // Top right of tile in atlas
+                    UVArray[iVertCount + 1] = new Vector2((tileNum + 1) / 6f, 0);
+
+                    // Bottom right of tile in atlas
+                    UVArray[iVertCount + 2] = new Vector2((tileNum + 1) / 6f, 1);
+
+                    //Bottom left of tile in atlas
+                    UVArray[iVertCount + 3] = new Vector2(tileNum / 6f, 1);
 
                     iVertCount += 4;
                 }
             }
 
             meshFilter.mesh.uv = UVArray;
+
+            // Add a 2d box collider on there to allow us to do the ray cast
+            // and determine what tile we are clicking on. 
+            mapMesh.AddComponent<BoxCollider2D>();
         }
     }
 }
