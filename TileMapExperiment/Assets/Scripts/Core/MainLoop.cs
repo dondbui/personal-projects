@@ -5,6 +5,7 @@
 /// <date>March 5th, 2017</date>
 /// ---------------------------------------------------------------------------
 
+using core;
 using core.tilesys;
 using UnityEngine;
 
@@ -55,6 +56,12 @@ public class MainLoop : MonoBehaviour
         Debug.Log("ZOOM LEVEL: " + zoomLevel);
 
         new TileMeshGenerator(mapData);
+
+        // Create the units
+        UnitController uc = UnitController.GetInstance();
+        uc.PlaceNewUnit();
+
+        uc.MoveUnitToTile("shipAssets_0", 3, 0);
     }
     
     /// <summary>
@@ -72,6 +79,9 @@ public class MainLoop : MonoBehaviour
         {
             CheckMouseReleased();
         }
+
+        UnitController uc = UnitController.GetInstance();
+        uc.Update();
     }
 
     /// <summary>
@@ -166,7 +176,7 @@ public class MainLoop : MonoBehaviour
     /// </summary>
     /// <param name="clickPos"></param>
     /// <returns></returns>
-    private Vector2 GetTilePosFromClickPos(Vector3 clickPos)
+    public Vector2 GetTilePosFromClickPos(Vector3 clickPos)
     {
         Vector2 returnPos = new Vector2();
 

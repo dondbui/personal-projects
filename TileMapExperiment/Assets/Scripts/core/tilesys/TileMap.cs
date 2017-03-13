@@ -54,8 +54,6 @@ public class TileMap : MonoBehaviour
         mesh.normals = normals;
 
         MeshFilter meshFilter = GetComponent<MeshFilter>();
-        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        MeshCollider meshColider = GetComponent<MeshCollider>();
 
         meshFilter.mesh = mesh;
     }
