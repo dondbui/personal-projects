@@ -5,16 +5,15 @@
 /// <date>March 12th, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using UnityEngine;
+using core.assets;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace core
 {
     public class UnitController
     {
         private static UnitController instance;
-
-        Dictionary<string, Sprite> unitSpriteDir = new Dictionary<string, Sprite>();
 
         Dictionary<string, GameObject> unitMap = new Dictionary<string, GameObject>();
 
@@ -24,14 +23,7 @@ namespace core
 
         private UnitController()
         {
-            Sprite[] unitSprites = Resources.LoadAll<Sprite>("Textures/ShipAssets");
-
-            // Load all of the units into the director for quick look 
-            // up via Dictionary
-            for (int i = 0, count = unitSprites.Length; i < count; i++)
-            {
-                unitSpriteDir[unitSprites[i].name] = unitSprites[i];
-            }
+            
         }
 
         public static UnitController GetInstance()
@@ -85,13 +77,13 @@ namespace core
             finishedAnimKeys.Clear();
         }
 
-        public GameObject PlaceNewUnit()
+        public GameObject PlaceNewUnit(string id, string assetID)
         {
             GameObject newUnit = new GameObject();
             SpriteRenderer spriteRenderer = newUnit.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = unitSpriteDir["shipAssets_0"];
+            spriteRenderer.sprite = AssetManager.GetInstance().GetPreloadedSprite(assetID);
 
-            newUnit.name = spriteRenderer.sprite.name;
+            newUnit.name = id;
 
             newUnit.transform.position = GetTileToWorldPosition(0, 3);
 

@@ -6,7 +6,9 @@
 /// ---------------------------------------------------------------------------
 
 using core;
+using core.assets;
 using core.tilesys;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -34,7 +36,10 @@ public class MainLoop : MonoBehaviour
 
     void Start ()
     {
+        DateTime startDate = DateTime.Now;
         Debug.Log("Game Initializing");
+
+        PreloadAssets();
 
         TiledCSVParser csvParser = TiledCSVParser.GetInstance();
         string[,] rawData = csvParser.ReadTiledCSVFile("MapData/map1");
@@ -42,8 +47,6 @@ public class MainLoop : MonoBehaviour
         MapData mapData = new MapData(rawData);
         Debug.Log("Tile at 0,0: " + mapData.GetTileAt(0, 0));
         Debug.Log("Tile at 0,31: " + mapData.GetTileAt(0, 31));
-
-        // SpriteTileGenerator stg = new SpriteTileGenerator(mapData);
 
         // Setup the bounds of the world
         CAMERA_BOUND.x = -1;
@@ -59,9 +62,13 @@ public class MainLoop : MonoBehaviour
 
         // Create the units
         UnitController uc = UnitController.GetInstance();
-        uc.PlaceNewUnit();
+        uc.PlaceNewUnit("ship", "shipAssets_0");
+        uc.MoveUnitToTile("ship", 4, 0);
 
-        uc.MoveUnitToTile("shipAssets_0", 3, 0);
+        DateTime endDate = DateTime.Now;
+
+        Debug.Log("Total Initialization Time: " + 
+            endDate.Subtract(startDate).TotalMilliseconds + " MS");
     }
     
     /// <summary>
@@ -82,6 +89,14 @@ public class MainLoop : MonoBehaviour
 
         UnitController uc = UnitController.GetInstance();
         uc.Update();
+    }
+
+    private void PreloadAssets()
+    {
+        AssetManager assetManager = AssetManager.GetInstance();
+
+        // Preload some assets.
+        assetManager.PreloadMultiSpriteSheet("Textures/ShipAssets");
     }
 
     /// <summary>
@@ -176,7 +191,7 @@ public class MainLoop : MonoBehaviour
     /// </summary>
     /// <param name="clickPos"></param>
     /// <returns></returns>
-    public Vector2 GetTilePosFromClickPos(Vector3 clickPos)
+    private Vector2 GetTilePosFromClickPos(Vector3 clickPos)
     {
         Vector2 returnPos = new Vector2();
 
