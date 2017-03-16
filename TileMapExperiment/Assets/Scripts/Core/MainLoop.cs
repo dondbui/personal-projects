@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core;
+using core.anim;
 using core.assets;
 using core.tilesys;
 using System;
@@ -34,6 +35,8 @@ public class MainLoop : MonoBehaviour
 
     private Vector3 moveDelta;
 
+    private GameObject selectionTile;
+
     void Start ()
     {
         DateTime startDate = DateTime.Now;
@@ -42,11 +45,12 @@ public class MainLoop : MonoBehaviour
         PreloadAssets();
 
         TiledCSVParser csvParser = TiledCSVParser.GetInstance();
-        string[,] rawData = csvParser.ReadTiledCSVFile("MapData/map1");
+        string[,] rawData = csvParser.ReadTiledCSVFile("MapData/spacemap1");
 
         MapData mapData = new MapData(rawData);
         Debug.Log("Tile at 0,0: " + mapData.GetTileAt(0, 0));
         Debug.Log("Tile at 0,31: " + mapData.GetTileAt(0, 31));
+
 
         // Setup the bounds of the world
         CAMERA_BOUND.x = -1;
@@ -58,12 +62,18 @@ public class MainLoop : MonoBehaviour
 
         Debug.Log("ZOOM LEVEL: " + zoomLevel);
 
+        // Generate the tile mesh
         new TileMeshGenerator(mapData);
+
+        // Create the selection tile
+        CreateSelectionTile();
 
         // Create the units
         UnitController uc = UnitController.GetInstance();
-        uc.PlaceNewUnit("ship", "shipAssets_0");
-        uc.MoveUnitToTile("ship", 4, 0);
+        GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_0");
+
+        AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 0));
+        AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 2));
 
         DateTime endDate = DateTime.Now;
 
@@ -87,8 +97,8 @@ public class MainLoop : MonoBehaviour
             CheckMouseReleased();
         }
 
-        UnitController uc = UnitController.GetInstance();
-        uc.Update();
+        UnitController.GetInstance().Update();
+        AnimController.GetInstance().Update();
     }
 
     private void PreloadAssets()
@@ -96,7 +106,8 @@ public class MainLoop : MonoBehaviour
         AssetManager assetManager = AssetManager.GetInstance();
 
         // Preload some assets.
-        assetManager.PreloadMultiSpriteSheet("Textures/ShipAssets");
+        assetManager.PreloadSpriteSheet("Textures/ShipAssets");
+        assetManager.PreloadSpriteSheet("Textures/selectionTile");
     }
 
     /// <summary>
@@ -182,31 +193,25 @@ public class MainLoop : MonoBehaviour
 
         Vector3 clickPos = Input.mousePosition;
 
-        GetTilePosFromClickPos(clickPos);
+        Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
+
+        GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
+        AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
+
+        // Set the selection tile to the clicked position
+        selectionTile.SetActive(true);
+        selectionTile.transform.position = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
     }
 
-    /// <summary>
-    /// Given a click position this returns to you the position of the click in
-    /// tile space. 
-    /// </summary>
-    /// <param name="clickPos"></param>
-    /// <returns></returns>
-    private Vector2 GetTilePosFromClickPos(Vector3 clickPos)
+    private void CreateSelectionTile()
     {
-        Vector2 returnPos = new Vector2();
+        selectionTile = new GameObject();
+        SpriteRenderer sr = selectionTile.AddComponent<SpriteRenderer>();
+        sr.sprite = AssetManager.GetInstance().GetPreloadedSprite("selectionTile");
 
-        Vector2 worldPoint = Camera.main.ScreenToWorldPoint(clickPos);
-        RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
-        if (hit.collider != null)
-        {
-            // The raw position. 
-            // Debug.Log(hit.collider.name + ": " + hit.point.x + ", " + hit.point.y);
+        selectionTile.name = "selectionTile";
 
-            returnPos.x = Mathf.FloorToInt(hit.point.x);
-            returnPos.y = Mathf.CeilToInt(hit.point.y);
-        }
-
-        Debug.Log("returnPos: " + returnPos.ToString());
-        return returnPos;
+        selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
+        selectionTile.SetActive(false);
     }
 }

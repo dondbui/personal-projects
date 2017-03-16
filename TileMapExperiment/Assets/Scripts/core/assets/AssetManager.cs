@@ -1,6 +1,5 @@
-﻿
-/// ---------------------------------------------------------------------------
-/// UnitController.cs
+﻿/// ---------------------------------------------------------------------------
+/// AssetManager.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>March 13th, 2017</date>
@@ -40,7 +39,7 @@ namespace core.assets
         }
 
         /// <summary>
-        /// Fetches a sprte from the sprite directory. 
+        /// Fetches a sprite from the sprite directory. 
         /// </summary>
         /// <param name="spriteName"></param>
         /// <returns></returns>
@@ -57,11 +56,12 @@ namespace core.assets
         }
 
         /// <summary>
-        /// Preloads a multisprite sheet and then stores each of it's sprites
-        /// in the sprite directory for quicker look up later.
+        /// Preloads a sprite sheet and then stores each of it's sprites
+        /// in the sprite directory for quicker look up later. This works
+        /// fine with single sprites as well
         /// </summary>
         /// <param name="sheetPath"></param>
-        public void PreloadMultiSpriteSheet(string sheetPath)
+        public void PreloadSpriteSheet(string sheetPath)
         {
             Sprite[] loadedSprites = Resources.LoadAll<Sprite>(sheetPath);
 
@@ -86,9 +86,9 @@ namespace core.assets
         /// <param name="sheetPath"></param>
         /// <param name="spriteName"></param>
         /// <returns></returns>
-        public Sprite LoadFromMultiSpriteSheet(string sheetPath, string spriteName)
+        public Sprite LoadFromSpriteSheet(string sheetPath, string spriteName)
         {
-            PreloadMultiSpriteSheet(sheetPath);
+            PreloadSpriteSheet(sheetPath);
 
             return GetPreloadedSprite(spriteName);
         }

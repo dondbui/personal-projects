@@ -87,7 +87,7 @@ namespace core.tilesys
             mesh.triangles = triangles;
             meshFilter.mesh = mesh;
 
-            Material mat = Resources.Load<Material>("Materials/Tiles2");
+            Material mat = Resources.Load<Material>("Materials/spacetiles");
 
             MeshRenderer mr = mapMesh.AddComponent<MeshRenderer>();
             mr.material = mat;
