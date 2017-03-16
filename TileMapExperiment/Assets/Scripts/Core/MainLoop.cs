@@ -65,6 +65,8 @@ public class MainLoop : MonoBehaviour
         // Generate the tile mesh
         new TileMeshGenerator(mapData);
 
+        new GridOverlay(mapData);
+
         // Create the selection tile
         CreateSelectionTile();
 
