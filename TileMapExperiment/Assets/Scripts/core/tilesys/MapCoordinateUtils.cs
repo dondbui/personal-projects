@@ -15,6 +15,11 @@ namespace core.tilesys
     public class MapCoordinateUtils
     {
         /// <summary>
+        /// The pixel width/height of the map tiles.
+        /// </summary>
+        public const int MAP_TILE_PIXEL_SIZE = 32;
+
+        /// <summary>
         /// Given a Vector2 of the tile position, return the world space
         /// coordinates in a new Vector 2. 
         /// </summary>

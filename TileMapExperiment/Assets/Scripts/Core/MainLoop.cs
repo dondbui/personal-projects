@@ -5,10 +5,10 @@
 /// <date>March 5th, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using core;
 using core.anim;
 using core.assets;
 using core.tilesys;
+using core.units;
 using System;
 using UnityEngine;
 
@@ -52,7 +52,7 @@ public class MainLoop : MonoBehaviour
 
         // Create the units
         UnitController uc = UnitController.GetInstance();
-        GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_0");
+        GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_77");
 
         AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 0));
         AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 2));

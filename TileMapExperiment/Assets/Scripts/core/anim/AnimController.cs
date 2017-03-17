@@ -1,5 +1,6 @@
 ﻿
 using core.tilesys;
+using core.units;
 /// ---------------------------------------------------------------------------
 /// AnimController.cs
 /// 
@@ -23,16 +24,14 @@ namespace core.anim
         /// </summary>
         private static AnimController instance;
 
-        /// <summary>
-        /// A map of game objects to their animation destinations
-        /// </summary>
-        private Dictionary<GameObject, List<Vector3>> pendingAnimations;
+        private List<GameObject> animatingObjects;
 
         private List<GameObject> finishedAnims;
 
         private AnimController()
         {
-            pendingAnimations = new Dictionary<GameObject, List<Vector3>>();
+            animatingObjects = new List<GameObject>();
+
             finishedAnims = new List<GameObject>();
         }
 
@@ -56,14 +55,14 @@ namespace core.anim
         /// </summary>
         public void Update()
         {
-            foreach (KeyValuePair<GameObject, List<Vector3>> entry in pendingAnimations)
+            for (int i = 0, count = animatingObjects.Count; i < count; i++)
             {
-                GameObject unit = entry.Key;
-                List <Vector3> destinations = entry.Value;
+                GameObject unit = animatingObjects[i];
+                GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
 
                 // If we don't have any destinations to animate towards then add
                 // to the finishedAnims list to remove later.
-                if (destinations == null || destinations.Count == 0)
+                if (!guc.HasPendingDestinations())
                 {
                     finishedAnims.Add(unit);
                     continue;
@@ -71,13 +70,13 @@ namespace core.anim
 
                 // Get the next destination we're supposed to animate towards
                 // First in first out.
-                Vector3 endPostion = destinations[0];
+                Vector3 endPostion = guc.GetCurrentDestination();
 
                 // At this point we've made it so let's remove this destination
                 // from the list of place we need to move this one.
                 if (unit.transform.position == endPostion)
                 {
-                    destinations.RemoveAt(0);
+                    guc.RemoveCurrentDestination();
                     continue;
                 }
 
@@ -90,11 +89,11 @@ namespace core.anim
             // currently animating. 
             for (int i = 0, count = finishedAnims.Count; i < count; i++)
             {
-                pendingAnimations.Remove(finishedAnims[i]);
+                animatingObjects.Remove(finishedAnims[i]);
 
                 Debug.Log("Done Animating: " + finishedAnims[i]);
 
-                if (pendingAnimations.Count < 1)
+                if (animatingObjects.Count < 1)
                 {
                     Debug.Log("No Animations Pending");
                 }
@@ -108,34 +107,28 @@ namespace core.anim
         public void ForceMoveUnitToTile(GameObject unit, Vector2 tilePos)
         {
             Vector2 endPos = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
-            List<Vector3> destinations;
+            GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+            guc.ClearPendingDestinations();
 
-            // if we don't have something already in there we'll make it.
-            if (!pendingAnimations.ContainsKey(unit))
+            guc.QueueDestination(endPos);
+
+            if (!animatingObjects.Contains(unit))
             {
-                pendingAnimations[unit] = new List<Vector3>();
+                animatingObjects.Add(unit);
             }
-
-            destinations = pendingAnimations[unit];
-            destinations.Clear();
-
-            destinations.Add(endPos);
         }
 
         public void QueueMoveUnitToTile(GameObject unit, Vector2 tilePos)
         {
             Vector2 endPos = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
-            List<Vector3> destinations;
+            GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
 
-            // if we don't have something already in there we'll make it.
-            if (!pendingAnimations.ContainsKey(unit))
+            guc.QueueDestination(endPos);
+
+            if (!animatingObjects.Contains(unit))
             {
-                pendingAnimations[unit] = new List<Vector3>();
+                animatingObjects.Add(unit);
             }
-
-            destinations = pendingAnimations[unit];
-
-            destinations.Add(endPos);
         }
     }
 }

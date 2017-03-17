@@ -10,8 +10,11 @@ using core.tilesys;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace core
+namespace core.units
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class UnitController
     {
         private static UnitController instance;
@@ -61,14 +64,23 @@ namespace core
         public GameObject PlaceNewUnit(string id, string assetID)
         {
             GameObject newUnit = new GameObject();
+            newUnit.name = id;
+
+            // Load the sprite for this unit.
             SpriteRenderer spriteRenderer = newUnit.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = AssetManager.GetInstance().GetPreloadedSprite(assetID);
             spriteRenderer.sortingOrder = 5;
 
-            newUnit.name = id;
+            GameUnitComponent guc = newUnit.AddComponent<GameUnitComponent>();
 
+            // Determine the tile size based off of the sprite data
+            guc.sizeX = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.width / spriteRenderer.sprite.pixelsPerUnit);
+            guc.sizeY = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.height / spriteRenderer.sprite.pixelsPerUnit); ;
+            
+            // Position this new unit
             newUnit.transform.position = MapCoordinateUtils.GetTileToWorldPosition(0, 0);
 
+            // Add it to the mapping of units
             unitMap[newUnit.name] = newUnit;
 
             return newUnit;
