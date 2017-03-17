@@ -23,9 +23,6 @@ public class MainLoop : MonoBehaviour
     private const float ZOOM_MAX = 10f;
     private const float SCROLL_MODIFIER = 1;
 
-    /// Stores the bounding box of the world. 
-    private static Rect CAMERA_BOUND = new Rect();
-
     private Vector3 lastPosition;
     private Vector3 currPosition;
 
@@ -44,28 +41,11 @@ public class MainLoop : MonoBehaviour
 
         PreloadAssets();
 
-        TiledCSVParser csvParser = TiledCSVParser.GetInstance();
-        string[,] rawData = csvParser.ReadTiledCSVFile("MapData/spacemap1");
-
-        MapData mapData = new MapData(rawData);
-        Debug.Log("Tile at 0,0: " + mapData.GetTileAt(0, 0));
-        Debug.Log("Tile at 0,31: " + mapData.GetTileAt(0, 31));
-
-
-        // Setup the bounds of the world
-        CAMERA_BOUND.x = -1;
-        CAMERA_BOUND.y = -1 - mapData.GetHeight();
-        CAMERA_BOUND.width = mapData.GetWidth();
-        CAMERA_BOUND.height = mapData.GetHeight();
+        MapController.GetInstance().LoadMapData("MapData/spacemap1");
 
         zoomLevel = Camera.main.orthographicSize;
 
         Debug.Log("ZOOM LEVEL: " + zoomLevel);
-
-        // Generate the tile mesh
-        new TileMeshGenerator(mapData);
-
-        new GridOverlay(mapData);
 
         // Create the selection tile
         CreateSelectionTile();
@@ -149,8 +129,10 @@ public class MainLoop : MonoBehaviour
         float predictedX = moveDelta.x + Camera.main.transform.position.x;
         float predictedY = moveDelta.y + Camera.main.transform.position.y;
 
-        float endXPos = Mathf.Clamp(predictedX, CAMERA_BOUND.xMin, CAMERA_BOUND.xMax);
-        float endYPos = Mathf.Clamp(predictedY, CAMERA_BOUND.yMin, CAMERA_BOUND.yMax);
+        Rect cameraBounds = MapController.CAMERA_BOUND;
+
+        float endXPos = Mathf.Clamp(predictedX, cameraBounds.xMin, cameraBounds.xMax);
+        float endYPos = Mathf.Clamp(predictedY, cameraBounds.yMin, cameraBounds.yMax);
 
         endPosition.x = endXPos;
         endPosition.y = endYPos;

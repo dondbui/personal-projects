@@ -11,37 +11,41 @@ using UnityEngine;
 
 namespace core.tilesys
 {
-    public class GridOverlay
+    public class GridOverlayGenerator
     {
         private const string GRID_GAME_OBJ_NAME = "GridOverlay";
 
-        private int NUM_TILES_X = 2;
-        private int NUM_TILES_Y = 2;
+        private static GridOverlayGenerator instance;
 
         private int TILE_SIZE = 1;
 
-        private MapData mapData;
-
-        public GridOverlay(MapData mapData)
+        private GridOverlayGenerator()
         {
-            this.mapData = mapData;
+        }
 
-            NUM_TILES_X = this.mapData.GetWidth();
-            NUM_TILES_Y = this.mapData.GetHeight();
+        public static GridOverlayGenerator GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new GridOverlayGenerator();
+            }
 
-            GenerateMesh();
+            return instance;
         }
 
         /// Creates the game object, adds the mesh, all the appropriate
         /// components and then adjusts the UV Map
-        private void GenerateMesh()
+        public GameObject GenerateMesh(MapData mapData)
         {
             GameObject mapMesh = new GameObject();
             mapMesh.name = GRID_GAME_OBJ_NAME;
 
             mapMesh.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
 
-            int numTiles = NUM_TILES_X * NUM_TILES_Y;
+            int numTilesX = mapData.GetWidth();
+            int numTilesY = mapData.GetHeight();
+
+            int numTiles = numTilesX * numTilesY;
             int numTriangles = numTiles * 6;
             int numVerts = numTiles * 4;
 
@@ -49,9 +53,9 @@ namespace core.tilesys
             Vector2[] UVArray = new Vector2[numVerts];
 
             int x, y, iVertCount = 0;
-            for (x = 0; x < NUM_TILES_X; x++)
+            for (x = 0; x < numTilesX; x++)
             {
-                for (y = 0; y < NUM_TILES_Y; y++)
+                for (y = 0; y < numTilesY; y++)
                 {
                     vertices[iVertCount + 0] = new Vector3(x, y, 0); //  top left
                     vertices[iVertCount + 1] = new Vector3(x + TILE_SIZE, y, 0); // top right
@@ -92,9 +96,9 @@ namespace core.tilesys
             iVertCount = 0;
 
             // Iterate through all of the tiles and adjust the UVs to make sure they line up.
-            for (x = 0; x < NUM_TILES_X; x++)
+            for (x = 0; x < numTilesX; x++)
             {
-                for (y = 0; y < NUM_TILES_Y; y++)
+                for (y = 0; y < numTilesY; y++)
                 {
                     // Top left of tile in atlas
                     UVArray[iVertCount + 0] = new Vector2(0, 0);
@@ -113,6 +117,8 @@ namespace core.tilesys
             }
 
             meshFilter.mesh.uv = UVArray;
+
+            return mapMesh;
         }
     }
 
