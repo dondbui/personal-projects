@@ -63,6 +63,13 @@ namespace core.units
         /// <returns></returns>
         public GameObject PlaceNewUnit(string id, string assetID)
         {
+            Vector2 pos = new Vector2(0, 0);
+
+            return PlaceNewUnit(id, assetID, pos);
+        }
+
+        public GameObject PlaceNewUnit(string id, string assetID, Vector2 pos)
+        {
             GameObject newUnit = new GameObject();
             newUnit.name = id;
 
@@ -76,9 +83,9 @@ namespace core.units
             // Determine the tile size based off of the sprite data
             guc.sizeX = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.width / spriteRenderer.sprite.pixelsPerUnit);
             guc.sizeY = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.height / spriteRenderer.sprite.pixelsPerUnit); ;
-            
+
             // Position this new unit
-            newUnit.transform.position = MapCoordinateUtils.GetTileToWorldPosition(0, 0);
+            newUnit.transform.position = MapCoordinateUtils.GetTileToWorldPosition((int)pos.x, (int)pos.y);
 
             // Add it to the mapping of units
             unitMap[newUnit.name] = newUnit;
