@@ -54,8 +54,24 @@ public class MainLoop : MonoBehaviour
         UnitController uc = UnitController.GetInstance();
         GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_77");
 
-        AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 0));
-        AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 2));
+        //AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 0));
+        //AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 2));
+
+        System.Random rand = new System.Random();
+        Vector2 enemyPos = new Vector2();
+
+        for (int i = 0; i < 10; i++)
+        {
+            int randX = rand.Next(0, 32);
+            int randY = rand.Next(0, 32);
+
+            enemyPos.x = randX;
+            enemyPos.y = randY;
+
+            uc.PlaceNewUnit("enemy" + i, "shipAssets_4", enemyPos);
+        }
+
+
 
         DateTime endDate = DateTime.Now;
 
@@ -179,8 +195,8 @@ public class MainLoop : MonoBehaviour
 
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
-        GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
-        AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
+        //GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
+        //AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
 
         // Set the selection tile to the clicked position
         selectionTile.SetActive(true);
