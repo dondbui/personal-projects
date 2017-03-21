@@ -54,24 +54,7 @@ public class MainLoop : MonoBehaviour
         UnitController uc = UnitController.GetInstance();
         GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_77");
 
-        //AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 0));
-        //AnimController.GetInstance().QueueMoveUnitToTile(ship, new Vector2(4, 2));
-
-        System.Random rand = new System.Random();
-        Vector2 enemyPos = new Vector2();
-
-        for (int i = 0; i < 10; i++)
-        {
-            int randX = rand.Next(0, 32);
-            int randY = rand.Next(0, 32);
-
-            enemyPos.x = randX;
-            enemyPos.y = randY;
-
-            uc.PlaceNewUnit("enemy" + i, "shipAssets_4", enemyPos);
-        }
-
-
+        RandomlyPlaceEnemies();
 
         DateTime endDate = DateTime.Now;
 
@@ -195,8 +178,8 @@ public class MainLoop : MonoBehaviour
 
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
-        //GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
-        //AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
+        GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
+        AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
 
         // Set the selection tile to the clicked position
         selectionTile.SetActive(true);
@@ -213,5 +196,25 @@ public class MainLoop : MonoBehaviour
 
         selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
         selectionTile.SetActive(false);
+    }
+
+    private void RandomlyPlaceEnemies()
+    {
+        System.Random rand = new System.Random();
+        Vector2 enemyPos = new Vector2();
+
+        int width = MapController.GetInstance().currentMap.GetWidth();
+        int height = MapController.GetInstance().currentMap.GetHeight();
+
+        for (int i = 0; i < 10; i++)
+        {
+            int randX = rand.Next(0, width);
+            int randY = rand.Next(0, height);
+
+            enemyPos.x = randX;
+            enemyPos.y = randY;
+
+            UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", enemyPos);
+        }
     }
 }
