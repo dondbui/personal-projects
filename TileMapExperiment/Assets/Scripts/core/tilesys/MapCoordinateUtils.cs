@@ -70,5 +70,15 @@ namespace core.tilesys
             Debug.Log("returnPos: " + returnPos.ToString());
             return returnPos;
         }
+
+        public static Vector2 GetTilePosFromWorld(Vector2 worldPos)
+        {
+            Vector2 returnPos = new Vector2();
+
+            returnPos.x = worldPos.x - 0.5f;
+            returnPos.y = (worldPos.y + 0.5f) * -1f;
+
+            return returnPos;
+        }
     }
 }

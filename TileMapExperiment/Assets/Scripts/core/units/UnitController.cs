@@ -19,7 +19,7 @@ namespace core.units
     {
         private static UnitController instance;
 
-        Dictionary<string, GameObject> unitMap = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> unitMap = new Dictionary<string, GameObject>();
 
         private UnitController()
         {
@@ -90,7 +90,19 @@ namespace core.units
             // Add it to the mapping of units
             unitMap[newUnit.name] = newUnit;
 
+            MapController.GetInstance().PlaceUnit(newUnit, pos);
+
             return newUnit;
+        }
+
+        public void ReplaceAllUnits()
+        {
+            // Go through all of the units and place them down again. 
+            foreach (KeyValuePair<string, GameObject> entry in unitMap)
+            {
+                GameUnitComponent guc = entry.Value.GetComponent<GameUnitComponent>();
+                MapController.GetInstance().PlaceUnit(entry.Value, guc.CurrentTilePos);
+            }
         }
     }
 }

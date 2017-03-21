@@ -1,12 +1,14 @@
-﻿/// ---------------------------------------------------------------------------
+﻿
+using core.units;
+/// ---------------------------------------------------------------------------
 /// MapController.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>March 16th, 2017</date>
 /// ---------------------------------------------------------------------------
-
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace core.tilesys
@@ -21,7 +23,7 @@ namespace core.tilesys
         /// <summary>
         /// The current map that we are viewing.
         /// </summary>
-        private MapData currentMap;
+        public MapData currentMap { get; private set; } 
 
         /// <summary>
         /// The game object that contains the textured mesh of the map
@@ -61,7 +63,7 @@ namespace core.tilesys
             TiledCSVParser csvParser = TiledCSVParser.GetInstance();
             string[,] rawData = csvParser.ReadTiledCSVFile(csvPath);
 
-            MapData currentMap = new MapData(rawData);
+            currentMap = new MapData(rawData);
 
             // Setup the bounds of the world
             CAMERA_BOUND.x = -1;
@@ -74,6 +76,81 @@ namespace core.tilesys
 
             gridOverlay = GridOverlayGenerator.GetInstance().GenerateMesh(currentMap);
 
+            occupiedTileMap = new int[currentMap.GetWidth(), currentMap.GetHeight()];
+        }
+
+        public void PrintOutOccupiedTiles()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Occupied: \n");
+
+            for (int y = 0, yCount = occupiedTileMap.GetLength(0); y < yCount; y++)
+            {
+                for (int x = 0, xCount = occupiedTileMap.GetLength(1); x < xCount; x++)
+                {
+                    sb.Append(occupiedTileMap[x, y].ToString() + ",");
+                }
+                sb.Append("\n");
+            }
+
+            Debug.Log(sb.ToString());
+        }
+
+        public void LiftUnit(GameObject unit, Vector2 pos)
+        {
+            int startingX = Mathf.RoundToInt(pos.x);
+            int startingY = Mathf.RoundToInt(pos.y);
+
+            GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+            int width = guc.sizeX;
+            int height = guc.sizeY;
+
+            for (int x = startingX, xEnd = startingX + width; x < xEnd; x++)
+            {
+                for (int y = startingY, yEnd = startingY + height; y < yEnd; y++)
+                {
+                    occupiedTileMap[x, y] = 0;
+                }
+            }
+        }
+
+        public void PlaceUnit(GameObject unit, Vector2 pos)
+        {
+            int startingX = Mathf.RoundToInt(pos.x);
+            int startingY = Mathf.RoundToInt(pos.y);
+
+            GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+            int width = guc.sizeX;
+            int height = guc.sizeY;
+
+            for (int x = startingX, xEnd = startingX + width; x < xEnd; x++)
+            {
+                for (int y = startingY, yEnd = startingY + height; y < yEnd; y++)
+                {
+                    occupiedTileMap[x, y] = 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clears the occupied map and makes the unit controller place down all
+        /// the units once again. 
+        /// </summary>
+        public void ForceRefreshOccupiedMap()
+        {
+            // Clears the occupied map
+            for (int x = 0, xEnd = currentMap.GetWidth(); x < xEnd; x++)
+            {
+                for (int y = 0, yEnd = currentMap.GetHeight(); y < yEnd; y++)
+                {
+                    occupiedTileMap[x, y] = 0;
+                }
+            }
+
+            // Tell the unit controller to update itelf. 
+            UnitController.GetInstance().ReplaceAllUnits();
+
+            PrintOutOccupiedTiles();
         }
 
     }

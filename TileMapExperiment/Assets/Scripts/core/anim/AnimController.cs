@@ -97,6 +97,10 @@ namespace core.anim
                 {
                     Debug.Log("No Animations Pending");
                 }
+
+                // After everything is done animating we try a force a full refresh
+                // of the occupied map
+                MapController.GetInstance().ForceRefreshOccupiedMap();
             }
 
             // Clear out the finished Anim keys since we've removed all of the 

@@ -1,10 +1,11 @@
-﻿/// ---------------------------------------------------------------------------
+﻿
+using core.tilesys;
+/// ---------------------------------------------------------------------------
 /// GameUnitComponent.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>March 16th, 2017</date>
 /// ---------------------------------------------------------------------------
-
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +24,14 @@ namespace core.units
         public int sizeY;
 
         public List<Vector2> pendingDestinations = new List<Vector2>();
+
+        public Vector2 CurrentTilePos
+        {
+            get
+            {
+                return MapCoordinateUtils.GetTilePosFromWorld(this.gameObject.transform.position);
+            }
+        }
 
         public bool HasPendingDestinations()
         {
@@ -48,5 +57,7 @@ namespace core.units
         {
             pendingDestinations.Clear();
         }
+
+        
     }
 }
