@@ -90,6 +90,8 @@ namespace core.units
             Vector3 endPos = MapCoordinateUtils.GetTileToWorldPosition(pos);
 
             // Apply sprite size offset
+            endPos.x = endPos.x + guc.tileOffsetX;
+            endPos.y = endPos.y + guc.tileOffsetY;
 
             newUnit.transform.position = endPos;
 
