@@ -114,6 +114,10 @@ namespace core.anim
             GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
             guc.ClearPendingDestinations();
 
+            // Apply tile size off set.
+            endPos.x = endPos.x + guc.tileOffsetX;
+            endPos.y = endPos.y + guc.tileOffsetY;
+
             guc.QueueDestination(endPos);
 
             if (!animatingObjects.Contains(unit))
@@ -126,6 +130,10 @@ namespace core.anim
         {
             Vector2 endPos = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
             GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+
+            // Apply tile size off set.
+            endPos.x = endPos.x + guc.tileOffsetX;
+            endPos.y = endPos.y + guc.tileOffsetY;
 
             guc.QueueDestination(endPos);
 

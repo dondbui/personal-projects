@@ -89,6 +89,7 @@ public class MainLoop : MonoBehaviour
         // Preload some assets.
         assetManager.PreloadSpriteSheet("Textures/ShipAssets");
         assetManager.PreloadSpriteSheet("Textures/selectionTile");
+        assetManager.PreloadSpriteSheet("Textures/boss1");
     }
 
     /// <summary>
@@ -216,5 +217,10 @@ public class MainLoop : MonoBehaviour
 
             UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", enemyPos);
         }
+
+        // Place the boss
+        enemyPos.x = 28;
+        enemyPos.y = 0;
+        UnitController.GetInstance().PlaceNewUnit("boss", "boss1", enemyPos);
     }
 }

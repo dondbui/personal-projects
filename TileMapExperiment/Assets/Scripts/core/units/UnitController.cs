@@ -81,11 +81,17 @@ namespace core.units
             GameUnitComponent guc = newUnit.AddComponent<GameUnitComponent>();
 
             // Determine the tile size based off of the sprite data
-            guc.sizeX = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.width / spriteRenderer.sprite.pixelsPerUnit);
-            guc.sizeY = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.height / spriteRenderer.sprite.pixelsPerUnit); ;
+            float ppu = spriteRenderer.sprite.pixelsPerUnit;
+
+            guc.sizeX = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.width / ppu);
+            guc.sizeY = Mathf.CeilToInt(spriteRenderer.sprite.textureRect.height / ppu); ;
 
             // Position this new unit
-            newUnit.transform.position = MapCoordinateUtils.GetTileToWorldPosition((int)pos.x, (int)pos.y);
+            Vector3 endPos = MapCoordinateUtils.GetTileToWorldPosition(pos);
+
+            // Apply sprite size offset
+
+            newUnit.transform.position = endPos;
 
             // Add it to the mapping of units
             unitMap[newUnit.name] = newUnit;

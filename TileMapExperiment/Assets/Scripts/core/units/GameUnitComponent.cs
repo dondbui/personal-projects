@@ -23,13 +23,48 @@ namespace core.units
         [SerializeField]
         public int sizeY;
 
+        /// <summary>
+        /// The x offset needed to compensate for the center pivot on larger
+        /// size unit while retaining center of 0.0 tile being the movement
+        /// position
+        /// </summary>
+        public float tileOffsetX
+        {
+            get
+            {
+                return ((sizeX - 1) / 2f);
+            }
+        }
+
+        /// <summary>
+        /// The y offset needed to compensate for the center pivot on larger
+        /// size unit while retaining center of 0.0 tile being the movement
+        /// position
+        /// </summary>
+        public float tileOffsetY
+        {
+            get
+            {
+                return -((sizeY - 1) / 2f);
+            }
+        }
+
+        /// <summary>
+        /// List of destinations awaiting animation completion. 
+        /// </summary>
         public List<Vector2> pendingDestinations = new List<Vector2>();
 
         public Vector2 CurrentTilePos
         {
             get
             {
-                return MapCoordinateUtils.GetTilePosFromWorld(this.gameObject.transform.position);
+                Vector2 currentPos = this.gameObject.transform.position;
+
+                // Remove the tile size offset
+                currentPos.x -= tileOffsetX;
+                currentPos.y -= tileOffsetY;
+
+                return MapCoordinateUtils.GetTilePosFromWorld(currentPos);
             }
         }
 
