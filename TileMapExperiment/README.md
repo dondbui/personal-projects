@@ -7,3 +7,4 @@ This project is for my own personal experimentation with tilemap systems using U
 I take no credit for the art taken from the following open sources.
 - http://opengameart.org/content/tileset32x32-grass-seasons-rocks-gravel
 - http://opengameart.org/content/space-ship-building-bits-volume-1
+- http://opengameart.org/content/spaceship-set-32x32px
