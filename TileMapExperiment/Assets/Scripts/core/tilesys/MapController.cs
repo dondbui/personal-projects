@@ -1,13 +1,12 @@
-﻿
-using core.units;
-/// ---------------------------------------------------------------------------
+﻿/// ---------------------------------------------------------------------------
 /// MapController.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>March 16th, 2017</date>
 /// ---------------------------------------------------------------------------
-using System.Collections;
-using System.Collections.Generic;
+
+using core.debug;
+using core.units;
 using System.Text;
 using UnityEngine;
 
@@ -84,11 +83,22 @@ namespace core.tilesys
             StringBuilder sb = new StringBuilder();
             sb.Append("Occupied: \n");
 
+            Vector2 tilePos = new Vector2();
+
             for (int y = 0, yCount = occupiedTileMap.GetLength(0); y < yCount; y++)
             {
                 for (int x = 0, xCount = occupiedTileMap.GetLength(1); x < xCount; x++)
                 {
-                    sb.Append(occupiedTileMap[x, y].ToString() + ",");
+                    int state = occupiedTileMap[x, y];
+
+                    sb.Append(state.ToString() + ",");
+
+                    if (state == 1)
+                    {
+                        tilePos.x = x;
+                        tilePos.y = y;
+                        MapDebugController.DrawTileOccupied(tilePos);
+                    }
                 }
                 sb.Append("\n");
             }
@@ -149,8 +159,6 @@ namespace core.tilesys
 
             // Tell the unit controller to update itelf. 
             UnitController.GetInstance().ReplaceAllUnits();
-
-            PrintOutOccupiedTiles();
         }
 
     }

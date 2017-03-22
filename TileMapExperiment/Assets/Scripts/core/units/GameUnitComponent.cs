@@ -1,11 +1,11 @@
-﻿
-using core.tilesys;
-/// ---------------------------------------------------------------------------
+﻿/// ---------------------------------------------------------------------------
 /// GameUnitComponent.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>March 16th, 2017</date>
 /// ---------------------------------------------------------------------------
+
+using core.tilesys;
 using System.Collections.Generic;
 using UnityEngine;
 
