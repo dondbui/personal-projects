@@ -24,5 +24,10 @@ public class MapDebugComponent : Editor
         {
             MapController.GetInstance().PrintOutOccupiedTiles();
         }
+
+        if (GUILayout.Button("Show Vision Tiles"))
+        {
+            VisionController.GetInstance().DebugVisionTiles();
+        }
     }
 }

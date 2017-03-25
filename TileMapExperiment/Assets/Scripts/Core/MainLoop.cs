@@ -54,7 +54,9 @@ public class MainLoop : MonoBehaviour
         UnitController uc = UnitController.GetInstance();
         GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_77");
 
-        RandomlyPlaceEnemies();
+        //RandomlyPlaceEnemies();
+        //RandomlyPlaceAsteroids();
+        PlaceVisionTest();
 
         DateTime endDate = DateTime.Now;
 
@@ -90,6 +92,7 @@ public class MainLoop : MonoBehaviour
         assetManager.PreloadSpriteSheet("Textures/ShipAssets");
         assetManager.PreloadSpriteSheet("Textures/selectionTile");
         assetManager.PreloadSpriteSheet("Textures/boss1");
+        assetManager.PreloadSpriteSheet("Textures/asteroid");
     }
 
     /// <summary>
@@ -201,26 +204,66 @@ public class MainLoop : MonoBehaviour
 
     private void RandomlyPlaceEnemies()
     {
-        System.Random rand = new System.Random();
-        Vector2 enemyPos = new Vector2();
+        Vector2 pos = new Vector2();
 
         int width = MapController.GetInstance().currentMap.GetWidth();
         int height = MapController.GetInstance().currentMap.GetHeight();
 
         for (int i = 0; i < 10; i++)
         {
-            int randX = rand.Next(0, width);
-            int randY = rand.Next(0, height);
+            int randX = UnityEngine.Random.Range(0, width);
+            int randY = UnityEngine.Random.Range(0, height);
 
-            enemyPos.x = randX;
-            enemyPos.y = randY;
+            pos.x = randX;
+            pos.y = randY;
 
-            UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", enemyPos);
+            UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", pos, false);
         }
+    }
 
-        // Place the boss
-        enemyPos.x = 28;
-        enemyPos.y = 0;
-        UnitController.GetInstance().PlaceNewUnit("boss", "boss1", enemyPos);
+    private void RandomlyPlaceAsteroids()
+    {
+        Vector2 pos = new Vector2();
+
+        int width = MapController.GetInstance().currentMap.GetWidth();
+        int height = MapController.GetInstance().currentMap.GetHeight();
+
+        for (int i = 0; i < 10; i++)
+        {
+            int randX = UnityEngine.Random.Range(0, width);
+            int randY = UnityEngine.Random.Range(0, height);
+
+            pos.x = randX;
+            pos.y = randY;
+
+            UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
+        }
+    }
+
+    private void PlaceVisionTest()
+    {
+        Vector2 pos = new Vector2();
+
+        pos.x = 6;
+        pos.y = 4;
+        UnitController.GetInstance().PlaceNewUnit("hiding", "shipAssets_4", pos, false);
+
+        pos.x = 8;
+        pos.y = 0;
+        UnitController.GetInstance().PlaceNewUnit("showing", "shipAssets_4", pos, false);
+
+        pos.x = 4;
+        pos.y = 2;
+
+        GameObject go = UnitController.GetInstance().PlaceNewUnit("asteroid" + 0, "asteroid", pos, true);
+        GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
+        guc.blocksVision = true;
+
+        pos.x = 6;
+        pos.y = 1;
+
+        go = UnitController.GetInstance().PlaceNewUnit("asteroid" + 1, "asteroid", pos, true);
+        guc = go.GetComponent<GameUnitComponent>();
+        guc.blocksVision = true;
     }
 }

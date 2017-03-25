@@ -65,10 +65,10 @@ namespace core.units
         {
             Vector2 pos = new Vector2(0, 0);
 
-            return PlaceNewUnit(id, assetID, pos);
+            return PlaceNewUnit(id, assetID, pos, false);
         }
 
-        public GameObject PlaceNewUnit(string id, string assetID, Vector2 pos)
+        public GameObject PlaceNewUnit(string id, string assetID, Vector2 pos, bool blocksVision)
         {
             GameObject newUnit = new GameObject();
             newUnit.name = id;
@@ -79,6 +79,7 @@ namespace core.units
             spriteRenderer.sortingOrder = 5;
 
             GameUnitComponent guc = newUnit.AddComponent<GameUnitComponent>();
+            guc.blocksVision = blocksVision;
 
             // Determine the tile size based off of the sprite data
             float ppu = spriteRenderer.sprite.pixelsPerUnit;
@@ -111,6 +112,26 @@ namespace core.units
                 GameUnitComponent guc = entry.Value.GetComponent<GameUnitComponent>();
                 MapController.GetInstance().PlaceUnit(entry.Value, guc.CurrentTilePos);
             }
+        }
+
+        /// <summary>
+        /// Returns a list of all units in the game that block vision for the player
+        /// </summary>
+        /// <returns></returns>
+        public List<GameObject> GetAllVisionBlockingUnits()
+        {
+            List<GameObject> visionBlockers = new List<GameObject>();
+
+            foreach (KeyValuePair<string, GameObject> entry in unitMap)
+            {
+                GameUnitComponent guc = entry.Value.GetComponent<GameUnitComponent>();
+                if (guc.blocksVision)
+                {
+                    visionBlockers.Add(entry.Value);
+                }
+            }
+
+            return visionBlockers;
         }
     }
 }

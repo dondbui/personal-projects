@@ -7,6 +7,7 @@
 
 using core.debug;
 using core.units;
+using System;
 using System.Text;
 using UnityEngine;
 
@@ -14,6 +15,10 @@ namespace core.tilesys
 {
     public class MapController
     {
+        private const int OCCUPIED = 1;
+        private const int VACANT = 0;
+        private const int OCCUPIED_BLOCKS = 2;
+
         private static MapController instance;
 
         /// Stores the bounding box of the world. 
@@ -106,6 +111,26 @@ namespace core.tilesys
             Debug.Log(sb.ToString());
         }
 
+        public bool IsTileOccupied(int x, int y)
+        {
+            return occupiedTileMap[x, y] != VACANT;
+        }
+
+        public bool IsTileBlockingVision(int x, int y)
+        {
+            if (x < 0 || x >= currentMap.GetWidth())
+            {
+                return true;
+            }
+
+            if (y < 0 || y >= currentMap.GetHeight())
+            {
+                return true;
+            }
+
+            return occupiedTileMap[x, y] == OCCUPIED_BLOCKS;
+        }
+
         public void LiftUnit(GameObject unit, Vector2 pos)
         {
             int startingX = Mathf.RoundToInt(pos.x);
@@ -119,7 +144,7 @@ namespace core.tilesys
             {
                 for (int y = startingY, yEnd = startingY + height; y < yEnd; y++)
                 {
-                    occupiedTileMap[x, y] = 0;
+                    occupiedTileMap[x, y] = VACANT;
                 }
             }
         }
@@ -133,11 +158,14 @@ namespace core.tilesys
             int width = guc.sizeX;
             int height = guc.sizeY;
 
-            for (int x = startingX, xEnd = startingX + width; x < xEnd; x++)
+            int xEnd = Math.Min(startingX + width, MapController.GetInstance().currentMap.GetWidth());
+            int yEnd = Math.Min(startingY + height, MapController.GetInstance().currentMap.GetHeight());
+
+            for (int x = startingX; x < xEnd; x++)
             {
-                for (int y = startingY, yEnd = startingY + height; y < yEnd; y++)
+                for (int y = startingY; y < yEnd; y++)
                 {
-                    occupiedTileMap[x, y] = 1;
+                    occupiedTileMap[x, y] = guc.blocksVision ? OCCUPIED_BLOCKS : OCCUPIED;
                 }
             }
         }
@@ -153,7 +181,7 @@ namespace core.tilesys
             {
                 for (int y = 0, yEnd = currentMap.GetHeight(); y < yEnd; y++)
                 {
-                    occupiedTileMap[x, y] = 0;
+                    occupiedTileMap[x, y] = VACANT;
                 }
             }
 
