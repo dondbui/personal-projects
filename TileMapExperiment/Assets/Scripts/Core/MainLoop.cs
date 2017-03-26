@@ -50,12 +50,10 @@ public class MainLoop : MonoBehaviour
         // Create the selection tile
         CreateSelectionTile();
 
-        // Create the units
-        UnitController uc = UnitController.GetInstance();
-        GameObject ship = uc.PlaceNewUnit("ship", "shipAssets_77");
+        PlacePlayerUnits();
 
         //RandomlyPlaceEnemies();
-        //RandomlyPlaceAsteroids();
+        RandomlyPlaceAsteroids();
         PlaceVisionTest();
 
         DateTime endDate = DateTime.Now;
@@ -182,7 +180,7 @@ public class MainLoop : MonoBehaviour
 
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
-        GameObject ship = UnitController.GetInstance().GetUnitByID("ship");
+        GameObject ship = UnitController.GetInstance().GetUnitByID("player0");
         AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
 
         // Set the selection tile to the clicked position
@@ -202,6 +200,27 @@ public class MainLoop : MonoBehaviour
         selectionTile.SetActive(false);
     }
 
+    private void PlacePlayerUnits()
+    {
+        Vector2 pos = new Vector2();
+
+        int width = MapController.GetInstance().currentMap.GetWidth();
+        int height = MapController.GetInstance().currentMap.GetHeight();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int randX = UnityEngine.Random.Range(0, width);
+            int randY = UnityEngine.Random.Range(0, height);
+
+            pos.x = randX;
+            pos.y = randY;
+
+            GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
+            GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
+            guc.type = UnitType.PLAYER;
+        }
+    }
+
     private void RandomlyPlaceEnemies()
     {
         Vector2 pos = new Vector2();
@@ -217,7 +236,9 @@ public class MainLoop : MonoBehaviour
             pos.x = randX;
             pos.y = randY;
 
-            UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", pos, false);
+            GameObject go = UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", pos, false);
+            GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
+            guc.type = UnitType.ENEMY;
         }
     }
 
@@ -228,7 +249,7 @@ public class MainLoop : MonoBehaviour
         int width = MapController.GetInstance().currentMap.GetWidth();
         int height = MapController.GetInstance().currentMap.GetHeight();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 40; i++)
         {
             int randX = UnityEngine.Random.Range(0, width);
             int randY = UnityEngine.Random.Range(0, height);

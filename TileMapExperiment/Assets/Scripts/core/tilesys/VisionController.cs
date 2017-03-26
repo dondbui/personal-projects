@@ -14,7 +14,7 @@ namespace core.tilesys
 {
     public class VisionController
     {
-        private const float DURATION = 5f;
+        private const float DURATION = 1f;
 
         private static VisionController instance;
 
@@ -50,30 +50,49 @@ namespace core.tilesys
                 lightMap = new int[mapWidth, mapHeight];
             }
 
-            // Get the main ship
-            GameObject mainShip = UnitController.GetInstance().GetUnitByID("ship");
+            // Iterate through all of the player units and check their vision
+            UnitController uc = UnitController.GetInstance();
+            List<GameObject> playerUnits = uc.GetAllPlayerUnits();
+            for (int i = 0, count = playerUnits.Count; i < count; i++)
+            {
+                GameUnitComponent guc = playerUnits[i].GetComponent<GameUnitComponent>();
 
-            Vector2 mainShipTileCoord = mainShip.GetComponent<GameUnitComponent>().CurrentTilePos;
+                Vector2 shipCoord = guc.CurrentTilePos;
 
-            Vector2 startPos = new Vector2(mainShip.transform.position.x, mainShip.transform.position.y);
-            Vector2 endPos = new Vector2();
+                // Do the ray cast to each of the border tiles
+                for (int x = 0; x < mapWidth; x++)
+                {
+                    DrawBresenhamLine(shipCoord, new Vector2(x, 0));
+                    DrawBresenhamLine(shipCoord, new Vector2(x, mapHeight - 1));
+                }
 
-            // Get all the vision blockers so we don't have to check everything.
-            List<GameObject> blockers = UnitController.GetInstance().GetAllVisionBlockingUnits();
+                for (int y = 0; y < mapHeight; y++)
+                {
+                    DrawBresenhamLine(shipCoord, new Vector2(0, y));
+                    DrawBresenhamLine(shipCoord, new Vector2(mapWidth - 1, y));
+                }
+            }
 
+            //// Get the main ship
+            //GameObject mainShip = UnitController.GetInstance().GetUnitByID("ship");
+
+            //Vector2 mainShipTileCoord = mainShip.GetComponent<GameUnitComponent>().CurrentTilePos;
+
+            //// Get all the vision blockers so we don't have to check everything.
+            //List<GameObject> blockers = UnitController.GetInstance().GetAllVisionBlockingUnits();
             
-            // Do the ray cast to each of the border tiles
-            for (int x = 0; x < mapWidth; x++)
-            {
-                DrawBresenhamLine(mainShipTileCoord, new Vector2(x, 0));
-                DrawBresenhamLine(mainShipTileCoord, new Vector2(x, mapHeight-1));
-            }
+            //// Do the ray cast to each of the border tiles
+            //for (int x = 0; x < mapWidth; x++)
+            //{
+            //    DrawBresenhamLine(mainShipTileCoord, new Vector2(x, 0));
+            //    DrawBresenhamLine(mainShipTileCoord, new Vector2(x, mapHeight-1));
+            //}
 
-            for (int y = 0; y < mapHeight; y++)
-            {
-                DrawBresenhamLine(mainShipTileCoord, new Vector2(0, y));
-                DrawBresenhamLine(mainShipTileCoord, new Vector2(mapWidth-1, y));
-            }
+            //for (int y = 0; y < mapHeight; y++)
+            //{
+            //    DrawBresenhamLine(mainShipTileCoord, new Vector2(0, y));
+            //    DrawBresenhamLine(mainShipTileCoord, new Vector2(mapWidth-1, y));
+            //}
         }
 
         private void DrawBresenhamLine(Vector2 startPos, Vector2 endPos)

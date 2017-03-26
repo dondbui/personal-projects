@@ -133,5 +133,21 @@ namespace core.units
 
             return visionBlockers;
         }
+
+        public List<GameObject> GetAllPlayerUnits()
+        {
+            List<GameObject> units = new List<GameObject>();
+
+            foreach (KeyValuePair<string, GameObject> entry in unitMap)
+            {
+                GameUnitComponent guc = entry.Value.GetComponent<GameUnitComponent>();
+                if (guc.type == UnitType.PLAYER)
+                {
+                    units.Add(entry.Value);
+                }
+            }
+
+            return units;
+        }
     }
 }

@@ -25,6 +25,8 @@ namespace core.units
 
         public bool blocksVision;
 
+        public UnitType type = UnitType.ENVIRONMENT;
+
         /// <summary>
         /// The x offset needed to compensate for the center pivot on larger
         /// size unit while retaining center of 0.0 tile being the movement
