@@ -207,13 +207,16 @@ public class MainLoop : MonoBehaviour
         int width = MapController.GetInstance().currentMap.GetWidth();
         int height = MapController.GetInstance().currentMap.GetHeight();
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 1; i++)
         {
             int randX = UnityEngine.Random.Range(0, width);
             int randY = UnityEngine.Random.Range(0, height);
 
             pos.x = randX;
             pos.y = randY;
+
+            pos.x = 0;
+            pos.y = 0;
 
             GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
             GameUnitComponent guc = go.GetComponent<GameUnitComponent>();

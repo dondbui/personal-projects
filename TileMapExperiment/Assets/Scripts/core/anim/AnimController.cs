@@ -103,6 +103,8 @@ namespace core.anim
                 MapController.GetInstance().ForceRefreshOccupiedMap();
             }
 
+            VisionController.GetInstance().DebugVisionTiles();
+
             // Clear out the finished Anim keys since we've removed all of the 
             // things at this point
             finishedAnims.Clear();
