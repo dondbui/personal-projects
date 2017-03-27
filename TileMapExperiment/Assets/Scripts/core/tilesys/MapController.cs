@@ -98,7 +98,7 @@ namespace core.tilesys
 
                     sb.Append(state.ToString() + ",");
 
-                    if (state == 1)
+                    if (state != VACANT)
                     {
                         tilePos.x = x;
                         tilePos.y = y;
