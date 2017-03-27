@@ -55,6 +55,8 @@ namespace core.anim
         /// </summary>
         public void Update()
         {
+            bool isVisionDirty = false;
+
             for (int i = 0, count = animatingObjects.Count; i < count; i++)
             {
                 GameObject unit = animatingObjects[i];
@@ -83,6 +85,8 @@ namespace core.anim
                 // Lerp it to the location
                 unit.transform.position = Vector3.LerpUnclamped(
                     unit.transform.position, endPostion, SPEED * Time.deltaTime);
+
+                isVisionDirty = true;
             }
 
             // After we're done animating them we remove them from the list of
@@ -101,13 +105,18 @@ namespace core.anim
                 // After everything is done animating we try a force a full refresh
                 // of the occupied map
                 MapController.GetInstance().ForceRefreshOccupiedMap();
-            }
 
-            VisionController.GetInstance().DebugVisionTiles();
+                isVisionDirty = true;
+            }
 
             // Clear out the finished Anim keys since we've removed all of the 
             // things at this point
             finishedAnims.Clear();
+
+            if (isVisionDirty)
+            {
+                VisionController.GetInstance().DebugVisionTiles();
+            }
         }
 
         public void ForceMoveUnitToTile(GameObject unit, Vector2 tilePos)
