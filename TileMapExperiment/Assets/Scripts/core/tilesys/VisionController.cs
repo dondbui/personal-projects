@@ -43,6 +43,11 @@ namespace core.tilesys
 
             MapData currentMap = mapCon.currentMap;
 
+            if (currentMap == null)
+            {
+                return;
+            }
+
             int mapWidth = currentMap.GetWidth();
             int mapHeight = currentMap.GetHeight();
 

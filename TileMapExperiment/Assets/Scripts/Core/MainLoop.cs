@@ -7,6 +7,7 @@
 
 using core.anim;
 using core.assets;
+using core.debug;
 using core.tilesys;
 using core.units;
 using System;
@@ -50,11 +51,7 @@ public class MainLoop : MonoBehaviour
         // Create the selection tile
         CreateSelectionTile();
 
-        PlacePlayerUnits();
-
-        //RandomlyPlaceEnemies();
-        RandomlyPlaceAsteroids();
-        PlaceVisionTest();
+        TestController.GetInstance().RunTests();
 
         DateTime endDate = DateTime.Now;
 
@@ -198,96 +195,5 @@ public class MainLoop : MonoBehaviour
 
         selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
         selectionTile.SetActive(false);
-    }
-
-    private void PlacePlayerUnits()
-    {
-        Vector2 pos = new Vector2();
-
-        int width = MapController.GetInstance().currentMap.GetWidth();
-        int height = MapController.GetInstance().currentMap.GetHeight();
-
-        for (int i = 0; i < 1; i++)
-        {
-            int randX = UnityEngine.Random.Range(0, width);
-            int randY = UnityEngine.Random.Range(0, height);
-
-            pos.x = randX;
-            pos.y = randY;
-
-            pos.x = 0;
-            pos.y = 0;
-
-            GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
-            GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
-            guc.type = UnitType.PLAYER;
-        }
-    }
-
-    private void RandomlyPlaceEnemies()
-    {
-        Vector2 pos = new Vector2();
-
-        int width = MapController.GetInstance().currentMap.GetWidth();
-        int height = MapController.GetInstance().currentMap.GetHeight();
-
-        for (int i = 0; i < 10; i++)
-        {
-            int randX = UnityEngine.Random.Range(0, width);
-            int randY = UnityEngine.Random.Range(0, height);
-
-            pos.x = randX;
-            pos.y = randY;
-
-            GameObject go = UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", pos, false);
-            GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
-            guc.type = UnitType.ENEMY;
-        }
-    }
-
-    private void RandomlyPlaceAsteroids()
-    {
-        Vector2 pos = new Vector2();
-
-        int width = MapController.GetInstance().currentMap.GetWidth();
-        int height = MapController.GetInstance().currentMap.GetHeight();
-
-        for (int i = 0; i < 40; i++)
-        {
-            int randX = UnityEngine.Random.Range(0, width);
-            int randY = UnityEngine.Random.Range(0, height);
-
-            pos.x = randX;
-            pos.y = randY;
-
-            UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
-        }
-    }
-
-    private void PlaceVisionTest()
-    {
-        Vector2 pos = new Vector2();
-
-        pos.x = 6;
-        pos.y = 4;
-        UnitController.GetInstance().PlaceNewUnit("hiding", "shipAssets_4", pos, false);
-
-        pos.x = 8;
-        pos.y = 0;
-        UnitController.GetInstance().PlaceNewUnit("showing", "shipAssets_4", pos, false);
-
-        pos.x = 4;
-        pos.y = 2;
-
-        GameObject go = UnitController.GetInstance().PlaceNewUnit("asteroid" + 0, "asteroid", pos, true);
-        GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
-        guc.blocksVision = true;
-
-        pos.x = 6;
-        pos.y = 1;
-
-        go = UnitController.GetInstance().PlaceNewUnit("asteroid" + 1, "asteroid", pos, true);
-        guc = go.GetComponent<GameUnitComponent>();
-        guc.blocksVision = true;
     }
 }
