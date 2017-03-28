@@ -88,33 +88,20 @@ namespace core.tilesys
                 for (int x = 0; x < mapWidth; x++)
                 {
                     Vector2 upperPos = new Vector2(x, 0);
-                    DrawBresenhamLine(shipCoord, upperPos);
+                    DrawBresenhamLine(shipCoord, upperPos, drawDebugLines);
                     
 
                     Vector2 lowerPos = new Vector2(x, mapHeight - 1);
-                    DrawBresenhamLine(shipCoord, lowerPos);
-
-                    if (drawDebugLines)
-                    {
-                        DrawLine(shipCoord, upperPos);
-                        DrawLine(shipCoord, lowerPos);
-                    }
+                    DrawBresenhamLine(shipCoord, lowerPos, drawDebugLines);
                 }
 
                 for (int y = 0; y < mapHeight; y++)
                 {
                     Vector2 leftPos = new Vector2(0, y);
-                    DrawBresenhamLine(shipCoord, leftPos);
-                    
+                    DrawBresenhamLine(shipCoord, leftPos, drawDebugLines);
 
                     Vector2 rightPos = new Vector2(mapWidth - 1, y);
-                    DrawBresenhamLine(shipCoord, rightPos);
-
-                    if (drawDebugLines)
-                    {
-                        DrawLine(shipCoord, leftPos);
-                        DrawLine(shipCoord, rightPos);
-                    }
+                    DrawBresenhamLine(shipCoord, rightPos, drawDebugLines);
                 }
             }
 
@@ -233,7 +220,7 @@ namespace core.tilesys
             lightTexture.Apply();
         }
 
-        private void DrawBresenhamLine(Vector2 startPos, Vector2 endPos)
+        private void DrawBresenhamLine(Vector2 startPos, Vector2 endPos, bool drawDebugLines)
         {
             float dX = endPos.x - startPos.x;
             float dY = endPos.y - startPos.y;
@@ -254,12 +241,12 @@ namespace core.tilesys
                 pitch = startPos.y - (slope * startPos.x);
 
                 int x = (int)startPos.x;
-
+                int y = (int)startPos.y;
                 // Go through each step along the X-Axis to see if we run into a
                 // a blocking tile.
                 for (int i= 0; i <= Math.Abs(dX); i++)
                 {
-                    int y = Mathf.RoundToInt((x * slope) + pitch);
+                    y = Mathf.RoundToInt((x * slope) + pitch);
 
                     bool isDone = false;
 
@@ -279,6 +266,11 @@ namespace core.tilesys
                     lightMap[x, y] = 1;
                     x += directionX;
                 }
+
+                if (drawDebugLines)
+                {
+                    DrawLine(startPos, new Vector2(x, y));
+                }
             }
             // A steeper sloper so we should traverse vertically for better accuracy
             else
@@ -287,12 +279,12 @@ namespace core.tilesys
                 pitch = startPos.x - (slope * startPos.y);
 
                 int y = (int)startPos.y;
-
+                int x = (int)startPos.x;
                 // Go through each step along the Y-Axis to see if we run into a
                 // blocking tile. 
                 for (int i = 0; i <= Math.Abs(dY); i++)
                 {
-                    int x = Mathf.RoundToInt((y * slope) + pitch);
+                    x = Mathf.RoundToInt((y * slope) + pitch);
 
                     // If we run into a blocking tile we're done no longer do we
                     // need to continue checking the ray
@@ -310,6 +302,11 @@ namespace core.tilesys
                     lightMap[x, y] = 1;
 
                     y += directionY;
+                }
+
+                if (drawDebugLines)
+                {
+                    DrawLine(startPos, new Vector2(x, y));
                 }
             }
         }
