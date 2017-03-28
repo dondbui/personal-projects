@@ -27,7 +27,7 @@ namespace core.tilesys
         /// <returns></returns>
         public static Vector2 GetTileToWorldPosition(Vector2 tilePos)
         {
-            return GetTileToWorldPosition((int)tilePos.x, (int)tilePos.y); ;
+            return GetTileToWorldPosition(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.y)); ;
         }
 
         /// <summary>

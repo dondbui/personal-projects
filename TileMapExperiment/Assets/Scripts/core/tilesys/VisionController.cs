@@ -14,7 +14,7 @@ namespace core.tilesys
 {
     public class VisionController
     {
-        private const float DURATION = 1f;
+        private const float DURATION = 3f;
 
         private static VisionController instance;
 
@@ -240,8 +240,8 @@ namespace core.tilesys
                 slope = dY / dX;
                 pitch = startPos.y - (slope * startPos.x);
 
-                int x = (int)startPos.x;
-                int y = (int)startPos.y;
+                int x = Mathf.RoundToInt(startPos.x);
+                int y = Mathf.RoundToInt(startPos.y);
                 // Go through each step along the X-Axis to see if we run into a
                 // a blocking tile.
                 for (int i= 0; i <= Math.Abs(dX); i++)
@@ -278,8 +278,8 @@ namespace core.tilesys
                 slope = dX/ dY;
                 pitch = startPos.x - (slope * startPos.y);
 
-                int y = (int)startPos.y;
-                int x = (int)startPos.x;
+                int y = Mathf.RoundToInt(startPos.y);
+                int x = Mathf.RoundToInt(startPos.x);
                 // Go through each step along the Y-Axis to see if we run into a
                 // blocking tile. 
                 for (int i = 0; i <= Math.Abs(dY); i++)
@@ -303,7 +303,6 @@ namespace core.tilesys
 
                     y += directionY;
                 }
-
                 if (drawDebugLines)
                 {
                     DrawLine(startPos, new Vector2(x, y));
