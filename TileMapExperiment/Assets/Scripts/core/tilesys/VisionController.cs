@@ -37,12 +37,18 @@ namespace core.tilesys
             return instance;
         }
 
-        public void DebugVisionTiles()
+        public void UpdateVisionTiles()
+        {
+            UpdateVisionTiles(false);
+        }
+
+        public void UpdateVisionTiles(bool drawDebugLines)
         {
             MapController mapCon = MapController.GetInstance();
 
             MapData currentMap = mapCon.currentMap;
 
+            // If the current map doesn't exist or hasn't been created yet. 
             if (currentMap == null)
             {
                 return;
@@ -81,14 +87,34 @@ namespace core.tilesys
                 // Do the ray cast to each of the border tiles
                 for (int x = 0; x < mapWidth; x++)
                 {
-                    DrawBresenhamLine(shipCoord, new Vector2(x, 0));
-                    DrawBresenhamLine(shipCoord, new Vector2(x, mapHeight - 1));
+                    Vector2 upperPos = new Vector2(x, 0);
+                    DrawBresenhamLine(shipCoord, upperPos);
+                    
+
+                    Vector2 lowerPos = new Vector2(x, mapHeight - 1);
+                    DrawBresenhamLine(shipCoord, lowerPos);
+
+                    if (drawDebugLines)
+                    {
+                        DrawLine(shipCoord, upperPos);
+                        DrawLine(shipCoord, lowerPos);
+                    }
                 }
 
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    DrawBresenhamLine(shipCoord, new Vector2(0, y));
-                    DrawBresenhamLine(shipCoord, new Vector2(mapWidth - 1, y));
+                    Vector2 leftPos = new Vector2(0, y);
+                    DrawBresenhamLine(shipCoord, leftPos);
+                    
+
+                    Vector2 rightPos = new Vector2(mapWidth - 1, y);
+                    DrawBresenhamLine(shipCoord, rightPos);
+
+                    if (drawDebugLines)
+                    {
+                        DrawLine(shipCoord, leftPos);
+                        DrawLine(shipCoord, rightPos);
+                    }
                 }
             }
 
@@ -286,6 +312,14 @@ namespace core.tilesys
                     y += directionY;
                 }
             }
+        }
+
+        private void DrawLine(Vector2 startPos, Vector2 endPos)
+        {
+            Vector2 worldStart = MapCoordinateUtils.GetTileToWorldPosition(startPos);
+            Vector2 worldEnd = MapCoordinateUtils.GetTileToWorldPosition(endPos);
+
+            Debug.DrawLine(worldStart, worldEnd, Color.yellow, DURATION, false);
         }
 
         private void DrawMarkOnTile(int x, int y)

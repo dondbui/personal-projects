@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.tilesys;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +28,16 @@ public class MapDebugComponent : Editor
 
         if (GUILayout.Button("Show Vision Tiles"))
         {
-            VisionController.GetInstance().DebugVisionTiles();
+            DateTime startDate = DateTime.Now;
+            Debug.Log("Game Initializing");
+
+            VisionController.GetInstance().UpdateVisionTiles(true);
+
+
+            DateTime endDate = DateTime.Now;
+
+            Debug.Log("Total Vision Calculation Time: " +
+                endDate.Subtract(startDate).TotalMilliseconds + " MS");
         }
     }
 }

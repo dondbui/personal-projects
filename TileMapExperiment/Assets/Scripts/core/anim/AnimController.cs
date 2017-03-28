@@ -115,7 +115,7 @@ namespace core.anim
 
             if (isVisionDirty)
             {
-                VisionController.GetInstance().DebugVisionTiles();
+                VisionController.GetInstance().UpdateVisionTiles();
             }
         }
 
