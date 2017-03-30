@@ -111,11 +111,82 @@ namespace core.tilesys
             Debug.Log(sb.ToString());
         }
 
+        public bool IsUnitPlaceableAt(GameObject unit, int x, int y)
+        {
+            GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+
+            int width = currentMap.GetWidth();
+            int height = currentMap.GetHeight();
+
+            // Make sure unit is in bounds
+            if (x < 0 || x + guc.sizeX - 1 > width - 1)
+            {
+                return false;
+            }
+
+            if (y < 0 || y + guc.sizeY - 1 > width - 1)
+            {
+                return false;
+            }
+
+            // Check to see if any of the tiles are already occupied
+            for (int i = y; i <= guc.sizeY; i++)
+            {
+                for (int j = x; j <= guc.sizeX; j++)
+                {
+                    if (IsTileOccupied(i, j))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns if the given tile coordinates are already occupied. 
+        /// </summary>
         public bool IsTileOccupied(int x, int y)
         {
             return occupiedTileMap[x, y] != VACANT;
         }
 
+        /// <summary>
+        /// Given a starting point which is upper left, and the size of the 
+        /// rect we want to check, check to see if any tile in that range
+        /// is already occupied. 
+        /// </summary>
+        public bool IsTileRangeOccupied(int x, int y, int sizeX, int sizeY)
+        {
+            int mapWidth = currentMap.GetWidth();
+            int mapHeight = currentMap.GetHeight();
+
+            // If we're out of bounds no need to check each tile
+            if (x < 0 || x + sizeX - 1 > mapWidth - 1 ||
+                y < 0 || y + sizeY - 1 > mapHeight - 1)
+            {
+                return true;
+            }
+
+            // Check each tile in the range. 
+            for (int yCounter = y, endY = y + sizeY; yCounter < endY; yCounter++)
+            {
+                for (int xCounter = x, endX = x + sizeX; xCounter < endX; xCounter++)
+                {
+                    if (IsTileOccupied(xCounter, yCounter))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Does the given tile contain a unit that blocks vision?
+        /// </summary>
         public bool IsTileBlockingVision(int x, int y)
         {
             if (x < 0 || x >= currentMap.GetWidth())

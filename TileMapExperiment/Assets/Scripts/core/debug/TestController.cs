@@ -55,13 +55,16 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
 
                 pos.x = randX;
                 pos.y = randY;
+
+                pos.x = 1;
+                pos.y = 1;
 
                 GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
                 GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
@@ -86,6 +89,11 @@ namespace core.debug
 
                 pos.x = randX;
                 pos.y = randY;
+
+                if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 1, 1))
+                {
+                    continue;
+                }
 
                 GameObject go = UnitController.GetInstance().PlaceNewUnit("enemy" + i, "shipAssets_4", pos, false);
                 GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
@@ -112,7 +120,12 @@ namespace core.debug
                 pos.x = randX;
                 pos.y = randY;
 
-                UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
+                if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 2, 2))
+                {
+                    continue;
+                }
+
+                GameObject asteroid = UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
             }
         }
     }
