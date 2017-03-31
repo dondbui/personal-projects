@@ -72,6 +72,29 @@ namespace core.units
             }
         }
 
+        /// <summary>
+        /// Is this unit occupying the given tile point
+        /// </summary>
+        public bool IsUnitOnTile(int x, int y)
+        {
+            Vector2 currentPos = CurrentTilePos;
+
+            // Check if we're in the x realm
+            if (x < currentPos.x ||  // Check if we're less than the unit's starting x
+                x > currentPos.x + (sizeX - 1)) // Check if they've overshot
+            {
+                return false;
+            }
+
+            if (y < currentPos.y ||  // Check if we're less than the unit's starting y
+                y > currentPos.y + (sizeY - 1)) // Check if they've overshot
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public bool HasPendingDestinations()
         {
             return pendingDestinations.Count > 0;

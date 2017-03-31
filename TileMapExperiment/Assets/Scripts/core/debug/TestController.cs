@@ -125,7 +125,7 @@ namespace core.debug
                     continue;
                 }
 
-                GameObject asteroid = UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
+                UnitController.GetInstance().PlaceNewUnit("asteroid" + i, "asteroid", pos, true);
             }
         }
     }

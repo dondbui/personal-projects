@@ -67,7 +67,6 @@ namespace core.tilesys
                 returnPos.y = -Mathf.CeilToInt(hit.point.y);
             }
 
-            Debug.Log("returnPos: " + returnPos.ToString());
             return returnPos;
         }
 

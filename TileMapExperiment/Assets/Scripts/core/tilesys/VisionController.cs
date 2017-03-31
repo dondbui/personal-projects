@@ -248,8 +248,6 @@ namespace core.tilesys
                 {
                     y = Mathf.RoundToInt((x * slope) + pitch);
 
-                    bool isDone = false;
-
                     // If we run into a blocking tile we're done no longer do we
                     // need to continue checking the ray
                     if (MapController.GetInstance().IsTileBlockingVision(x, y))

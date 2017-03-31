@@ -111,6 +111,10 @@ namespace core.tilesys
             Debug.Log(sb.ToString());
         }
 
+        /// <summary>
+        /// Returns true if the given unit is placeable at the given
+        /// tile position.
+        /// </summary>
         public bool IsUnitPlaceableAt(GameObject unit, int x, int y)
         {
             GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
@@ -124,7 +128,7 @@ namespace core.tilesys
                 return false;
             }
 
-            if (y < 0 || y + guc.sizeY - 1 > width - 1)
+            if (y < 0 || y + guc.sizeY - 1 > height - 1)
             {
                 return false;
             }

@@ -177,8 +177,7 @@ public class MainLoop : MonoBehaviour
 
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
-        GameObject ship = UnitController.GetInstance().GetUnitByID("player0");
-        AnimController.GetInstance().ForceMoveUnitToTile(ship, tilePos);
+        UnitSelector.GetInstance().TrySelectingUnitAt(tilePos);
 
         // Set the selection tile to the clicked position
         selectionTile.SetActive(true);

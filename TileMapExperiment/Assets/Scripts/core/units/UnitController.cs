@@ -54,6 +54,22 @@ namespace core.units
             return null;
         }
 
+        public GameObject GetUnitAtTile(Vector2 tilePos)
+        {
+            foreach (KeyValuePair<string, GameObject> entry in unitMap)
+            {
+                GameObject currUnit = entry.Value;
+                GameUnitComponent guc = currUnit.GetComponent<GameUnitComponent>();
+
+                if (guc.IsUnitOnTile((int)tilePos.x, (int)tilePos.y))
+                {
+                    return currUnit;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Creates a new unit in the world with the given name and
         /// loads the given texture. 
