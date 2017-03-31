@@ -16,9 +16,18 @@ public class UnitSelector
 
     private GameObject currSelectedUnit;
 
+    private GameObject selectionTile;
+
+    /// <summary>
+    /// Keeps track of the unit selection tile so we don't
+    /// have to keep making new Vector3 all the time when
+    /// we want to rescale the selection tile
+    /// </summary>
+    private Vector3 selectionScale;
+
     private UnitSelector()
     {
-
+        selectionScale = new Vector3(1f, 1f, 1f);
     }
 
     public static UnitSelector GetInstance()
@@ -29,6 +38,11 @@ public class UnitSelector
         }
 
         return instance;
+    }
+
+    public void SetSelectionTileGameObject(GameObject gameObject)
+    {
+        selectionTile = gameObject;
     }
 
     public GameObject GetCurrentlySelectedUnit()
@@ -48,6 +62,7 @@ public class UnitSelector
         // Bounce out if we're selecting an empty tile
         if (!isTileOccupied)
         {
+            Deselect();
             return false;
         }
 
@@ -57,9 +72,35 @@ public class UnitSelector
         {
             Debug.Log("Selected Unit: " + unit.name);
             currSelectedUnit = unit;
+            MoveSelectionTileToUnit(currSelectedUnit);
+        }
+        else
+        {
+            Deselect();
         }
 
         return unit == null;
+    }
+
+    /// <summary>
+    /// Moves the selection tile and sizes it to match the unit size
+    /// </summary>
+    private void MoveSelectionTileToUnit(GameObject unit)
+    {
+        GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
+        selectionScale.x = guc.sizeX;
+        selectionScale.y = guc.sizeY;
+        selectionTile.transform.localScale = selectionScale;
+
+        selectionTile.SetActive(true);
+
+        selectionTile.transform.position = unit.transform.position;
+    }
+
+    private void Deselect()
+    {
+        selectionTile.SetActive(false);
+        currSelectedUnit = null;
     }
 
 }

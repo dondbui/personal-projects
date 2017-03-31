@@ -178,10 +178,6 @@ public class MainLoop : MonoBehaviour
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
         UnitSelector.GetInstance().TrySelectingUnitAt(tilePos);
-
-        // Set the selection tile to the clicked position
-        selectionTile.SetActive(true);
-        selectionTile.transform.position = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
     }
 
     private void CreateSelectionTile()
@@ -194,5 +190,7 @@ public class MainLoop : MonoBehaviour
 
         selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
         selectionTile.SetActive(false);
+
+        UnitSelector.GetInstance().SetSelectionTileGameObject(selectionTile);
     }
 }
