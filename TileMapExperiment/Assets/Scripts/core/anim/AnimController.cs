@@ -1,5 +1,6 @@
 ﻿
 using core.tilesys;
+using core.tilesys.vision;
 using core.units;
 /// ---------------------------------------------------------------------------
 /// AnimController.cs

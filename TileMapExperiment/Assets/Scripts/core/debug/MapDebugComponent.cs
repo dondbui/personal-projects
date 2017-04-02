@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.tilesys;
+using core.tilesys.vision;
 using System;
 using UnityEditor;
 using UnityEngine;

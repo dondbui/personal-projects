@@ -5,11 +5,9 @@
 /// <date>March 23rd, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using core.tilesys.vision;
-using System;
 using UnityEngine;
 
-namespace core.tilesys
+namespace core.tilesys.vision
 {
     public class VisionController
     {
