@@ -5,9 +5,8 @@
 /// <date>March 23rd, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using core.units;
+using core.tilesys.vision;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace core.tilesys
@@ -74,38 +73,18 @@ namespace core.tilesys
 
             // clear the light map
             ClearLightMap();
-            
-            // Iterate through all of the player units and check their vision
-            UnitController uc = UnitController.GetInstance();
-            List<GameObject> playerUnits = uc.GetAllPlayerUnits();
-            for (int i = 0, count = playerUnits.Count; i < count; i++)
-            {
-                GameUnitComponent guc = playerUnits[i].GetComponent<GameUnitComponent>();
 
-                Vector2 shipCoord = guc.CurrentTilePos;
+            // Run the algorithm for updating the light map array.
+            EdgeTileCheck.Process(currentMap, drawDebugLines);
 
-                // Do the ray cast to each of the border tiles
-                for (int x = 0; x < mapWidth; x++)
-                {
-                    Vector2 upperPos = new Vector2(x, 0);
-                    DrawBresenhamLine(shipCoord, upperPos, drawDebugLines);
-                    
-
-                    Vector2 lowerPos = new Vector2(x, mapHeight - 1);
-                    DrawBresenhamLine(shipCoord, lowerPos, drawDebugLines);
-                }
-
-                for (int y = 0; y < mapHeight; y++)
-                {
-                    Vector2 leftPos = new Vector2(0, y);
-                    DrawBresenhamLine(shipCoord, leftPos, drawDebugLines);
-
-                    Vector2 rightPos = new Vector2(mapWidth - 1, y);
-                    DrawBresenhamLine(shipCoord, rightPos, drawDebugLines);
-                }
-            }
-
+            // Now based off of the light map array data we update
+            // the texture used to visualize the light map. 
             UpdateLightTexture();
+        }
+
+        public int[,] GetLightMap()
+        {
+            return lightMap;
         }
 
         private void GenerateShadowMesh()
@@ -173,6 +152,9 @@ namespace core.tilesys
             meshFilter.mesh.uv = UVArray;
         }
 
+        /// <summary>
+        /// Clears the light map data back to all darkness
+        /// </summary>
         private void ClearLightMap()
         {
             MapController mapCon = MapController.GetInstance();
@@ -191,6 +173,10 @@ namespace core.tilesys
             }
         }
 
+        /// <summary>
+        /// Updates the light map texture based off of the lightmap
+        /// which contains which tiles are visible.
+        /// </summary>
         private void UpdateLightTexture()
         {
             MapController mapCon = MapController.GetInstance();
@@ -200,6 +186,7 @@ namespace core.tilesys
             int mapWidth = currentMap.GetWidth();
             int mapHeight = currentMap.GetHeight();
 
+            // Iterate throught he lightMap and update the light texture
             for (int y = 0; y < mapHeight; y++)
             {
                 for (int x = 0; x < mapWidth; x++)
@@ -220,95 +207,10 @@ namespace core.tilesys
             lightTexture.Apply();
         }
 
-        private void DrawBresenhamLine(Vector2 startPos, Vector2 endPos, bool drawDebugLines)
-        {
-            float dX = endPos.x - startPos.x;
-            float dY = endPos.y - startPos.y;
-
-            int directionX = dX > 0 ? 1 : -1;
-            int directionY = dY > 0 ? 1 : -1;
-
-            // Is it more of a flat slope?
-            bool checkHoriz = Math.Abs(dX) >= Math.Abs(dY);
-
-            float slope;
-            float pitch;
-
-            // We have a flatter slope so let's traverse across the X-axis
-            if (checkHoriz)
-            {
-                slope = dY / dX;
-                pitch = startPos.y - (slope * startPos.x);
-
-                int x = Mathf.RoundToInt(startPos.x);
-                int y = Mathf.RoundToInt(startPos.y);
-                // Go through each step along the X-Axis to see if we run into a
-                // a blocking tile.
-                for (int i= 0; i <= Math.Abs(dX); i++)
-                {
-                    y = Mathf.RoundToInt((x * slope) + pitch);
-
-                    // If we run into a blocking tile we're done no longer do we
-                    // need to continue checking the ray
-                    if (MapController.GetInstance().IsTileBlockingVision(x, y))
-                    {
-                        if (x >= 0 && x < lightMap.GetLength(0) && 
-                            y >= 0 && y < lightMap.GetLength(1))
-                        {
-                            lightMap[x, y] = 1;
-                        }
-                        break;
-                    }
-
-                    //DrawMarkOnTile(x, y);
-                    lightMap[x, y] = 1;
-                    x += directionX;
-                }
-
-                if (drawDebugLines)
-                {
-                    DrawLine(startPos, new Vector2(x, y));
-                }
-            }
-            // A steeper sloper so we should traverse vertically for better accuracy
-            else
-            {
-                slope = dX/ dY;
-                pitch = startPos.x - (slope * startPos.y);
-
-                int y = Mathf.RoundToInt(startPos.y);
-                int x = Mathf.RoundToInt(startPos.x);
-                // Go through each step along the Y-Axis to see if we run into a
-                // blocking tile. 
-                for (int i = 0; i <= Math.Abs(dY); i++)
-                {
-                    x = Mathf.RoundToInt((y * slope) + pitch);
-
-                    // If we run into a blocking tile we're done no longer do we
-                    // need to continue checking the ray
-                    if (MapController.GetInstance().IsTileBlockingVision(x, y))
-                    {
-                        if (x >= 0 && x < lightMap.GetLength(0) &&
-                            y >= 0 && y < lightMap.GetLength(1))
-                        {
-                            lightMap[x, y] = 1;
-                        }
-                        break;
-                    }
-
-                    //DrawMarkOnTile(x, y);
-                    lightMap[x, y] = 1;
-
-                    y += directionY;
-                }
-                if (drawDebugLines)
-                {
-                    DrawLine(startPos, new Vector2(x, y));
-                }
-            }
-        }
-
-        private void DrawLine(Vector2 startPos, Vector2 endPos)
+        /// <summary>
+        /// Draws a debug line from one tile location to another.
+        /// </summary>
+        public static void DrawLine(Vector2 startPos, Vector2 endPos)
         {
             Vector2 worldStart = MapCoordinateUtils.GetTileToWorldPosition(startPos);
             Vector2 worldEnd = MapCoordinateUtils.GetTileToWorldPosition(endPos);
@@ -316,6 +218,9 @@ namespace core.tilesys
             Debug.DrawLine(worldStart, worldEnd, Color.yellow, DURATION, false);
         }
 
+        /// <summary>
+        /// Draws an X over a given tile coordinate
+        /// </summary>
         private void DrawMarkOnTile(int x, int y)
         {
             Vector2 startPos = new Vector2();
