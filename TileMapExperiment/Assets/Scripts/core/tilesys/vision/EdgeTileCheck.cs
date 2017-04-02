@@ -39,7 +39,6 @@ namespace core.tilesys.vision
                     Vector2 upperPos = new Vector2(x, 0);
                     DrawBresenhamLine(shipCoord, upperPos, drawDebugLines);
 
-
                     Vector2 lowerPos = new Vector2(x, mapHeight - 1);
                     DrawBresenhamLine(shipCoord, lowerPos, drawDebugLines);
                 }
@@ -85,9 +84,12 @@ namespace core.tilesys.vision
 
                 int x = Mathf.RoundToInt(startPos.x);
                 int y = Mathf.RoundToInt(startPos.y);
+
+                int count = Mathf.RoundToInt(Math.Abs(dX));
+
                 // Go through each step along the X-Axis to see if we run into a
                 // a blocking tile.
-                for (int i = 0; i <= Math.Abs(dX); i++)
+                for (int i = 0; i <= count; i++)
                 {
                     y = Mathf.RoundToInt((x * slope) + pitch);
 
@@ -103,9 +105,14 @@ namespace core.tilesys.vision
                         break;
                     }
 
-                    //DrawMarkOnTile(x, y);
                     lightMap[x, y] = 1;
-                    x += directionX;
+
+                    // Don't add anything at the last check since we don't want to
+                    // overshoot our debug lines
+                    if (i < count)
+                    {
+                        x += directionX;
+                    }
                 }
 
                 if (drawDebugLines)
@@ -121,9 +128,10 @@ namespace core.tilesys.vision
 
                 int y = Mathf.RoundToInt(startPos.y);
                 int x = Mathf.RoundToInt(startPos.x);
+                int count = Mathf.RoundToInt(Math.Abs(dY));
                 // Go through each step along the Y-Axis to see if we run into a
                 // blocking tile. 
-                for (int i = 0; i <= Math.Abs(dY); i++)
+                for (int i = 0; i <= count; i++)
                 {
                     x = Mathf.RoundToInt((y * slope) + pitch);
 
@@ -141,8 +149,14 @@ namespace core.tilesys.vision
 
                     lightMap[x, y] = 1;
 
-                    y += directionY;
+                    // Don't add anything at the last check since we don't want to
+                    // overshoot our debug lines
+                    if (i < count)
+                    {
+                        y += directionY;
+                    }
                 }
+
                 if (drawDebugLines)
                 {
                     VisionController.DrawLine(startPos, new Vector2(x, y));
