@@ -43,6 +43,8 @@ namespace core.debug
 
             RandomlyPlaceEnemies();
             RandomlyPlaceAsteroids();
+
+            VisionController.GetInstance().UpdateVisionTiles();
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 3; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
@@ -63,8 +65,11 @@ namespace core.debug
                 pos.x = randX;
                 pos.y = randY;
 
-                pos.x = 1;
-                pos.y = 1;
+                if (i == 0)
+                {
+                    pos.x = 1;
+                    pos.y = 1;
+                }
 
                 GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
                 GameUnitComponent guc = go.GetComponent<GameUnitComponent>();
