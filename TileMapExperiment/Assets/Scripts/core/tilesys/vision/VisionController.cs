@@ -11,6 +11,9 @@ namespace core.tilesys.vision
 {
     public class VisionController
     {
+        private const int VISIBLE = 1;
+        private const int NOT_VISIBLE = 0;
+
         private const float DURATION = 3f;
 
         private static VisionController instance;
@@ -73,8 +76,8 @@ namespace core.tilesys.vision
             ClearLightMap();
 
             // Run the algorithm for updating the light map array.
-            EdgeTileCheck.Process(currentMap, drawDebugLines);
-
+            EdgeTileRaycastAlgorithm.Process(currentMap, drawDebugLines);
+            
             // Now based off of the light map array data we update
             // the texture used to visualize the light map. 
             UpdateLightTexture();
@@ -166,7 +169,8 @@ namespace core.tilesys.vision
             {
                 for (int x = 0; x < mapWidth; x++)
                 {
-                    lightMap[x, y] = 0;
+                    lightMap[x, y] = NOT_VISIBLE;
+                    //lightMap[x, y] = VISIBLE;
                 }
             }
         }

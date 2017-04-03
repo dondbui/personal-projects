@@ -1,5 +1,5 @@
 ﻿/// ---------------------------------------------------------------------------
-/// VisionController.cs
+/// EdgeTileRaycastAlgorithm.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>April 1st, 2017</date>
@@ -17,7 +17,7 @@ namespace core.tilesys.vision
     /// all of the edge tiles and lights up tiles along the bresenham
     /// line until encountering a vision blocking tile. 
     /// </summary>
-    public class EdgeTileCheck
+    public class EdgeTileRaycastAlgorithm
     {
         public static void Process(MapData currentMap, bool drawDebugLines)
         {
