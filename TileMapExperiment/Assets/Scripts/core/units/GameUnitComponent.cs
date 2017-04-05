@@ -25,6 +25,8 @@ namespace core.units
 
         public bool blocksVision;
 
+        private int[,] visionMap;
+
         public UnitType type = UnitType.ENVIRONMENT;
 
         /// <summary>
@@ -69,6 +71,40 @@ namespace core.units
                 currentPos.y -= tileOffsetY;
 
                 return MapCoordinateUtils.GetTilePosFromWorld(currentPos);
+            }
+        }
+
+        public Rect GetCorners()
+        {
+            Vector2 currWorldPos = this.gameObject.transform.position;
+
+            Rect corners = new Rect();
+            corners.x = currWorldPos.x - (sizeX / 2);
+            corners.y = -currWorldPos.y - (sizeY / 2);
+
+            corners.width = sizeX;
+            corners.height = sizeY;
+
+            return corners;
+        }
+
+        public void InitializeVisionMap(int width, int height)
+        {
+            visionMap = new int[width, height];
+        }
+
+        public void ClearVisionMap()
+        {
+            int width = visionMap.GetLength(0);
+            int height = visionMap.GetLength(1);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; x < height; y++)
+                {
+                    // Set everything to darkness
+                    visionMap[x, y] = 0;
+                }
             }
         }
 
@@ -119,7 +155,5 @@ namespace core.units
         {
             pendingDestinations.Clear();
         }
-
-        
     }
 }

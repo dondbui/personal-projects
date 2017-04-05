@@ -97,6 +97,13 @@ namespace core.units
             GameUnitComponent guc = newUnit.AddComponent<GameUnitComponent>();
             guc.blocksVision = blocksVision;
 
+            MapController mc = MapController.GetInstance();
+
+            int mapWidth = mc.currentMap.GetWidth();
+            int mapHeight = mc.currentMap.GetHeight();
+
+            guc.InitializeVisionMap(mapWidth, mapHeight);
+
             // Determine the tile size based off of the sprite data
             float ppu = spriteRenderer.sprite.pixelsPerUnit;
 

@@ -42,7 +42,7 @@ namespace core.debug
         {
             PlacePlayerUnits();
 
-            RandomlyPlaceEnemies();
+            //RandomlyPlaceEnemies();
             RandomlyPlaceAsteroids();
 
             VisionController.GetInstance().UpdateVisionTiles();
@@ -58,7 +58,7 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 1; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
@@ -118,13 +118,16 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < 1; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
 
                 pos.x = randX;
                 pos.y = randY;
+
+                pos.x = 5;
+                pos.y = 5;
 
                 if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 2, 2))
                 {
