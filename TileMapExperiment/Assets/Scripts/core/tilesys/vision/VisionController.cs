@@ -11,14 +11,16 @@ namespace core.tilesys.vision
 {
     public class VisionController
     {
-        private const int VISIBLE = 1;
-        private const int NOT_VISIBLE = 0;
+        public const int VISIBLE = 1;
+        public const int NOT_VISIBLE = 0;
 
         private const float DURATION = 3f;
 
         private static VisionController instance;
 
         private int[,] lightMap;
+
+        private GameObject mapMesh;
 
         private Texture2D lightTexture;
 
@@ -72,6 +74,8 @@ namespace core.tilesys.vision
                 GenerateShadowMesh();
             }
 
+            mapMesh.SetActive(false);
+
             // clear the light map
             ClearLightMap();
 
@@ -82,7 +86,7 @@ namespace core.tilesys.vision
 
             // Now based off of the light map array data we update
             // the texture used to visualize the light map. 
-            //UpdateLightTexture();
+            UpdateLightTexture();
         }
 
         public int[,] GetLightMap()
@@ -90,9 +94,14 @@ namespace core.tilesys.vision
             return lightMap;
         }
 
+        public bool isTileVisible(int x, int y)
+        {
+            return lightMap[x, y] == VISIBLE;
+        }
+
         private void GenerateShadowMesh()
         {
-            GameObject mapMesh = new GameObject();
+            mapMesh = new GameObject();
             mapMesh.name = "lightMap";
 
             mapMesh.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
@@ -225,7 +234,7 @@ namespace core.tilesys.vision
         /// <summary>
         /// Draws an X over a given tile coordinate
         /// </summary>
-        private void DrawMarkOnTile(int x, int y)
+        public void DrawMarkOnTile(int x, int y)
         {
             Vector2 startPos = new Vector2();
             Vector2 endPos = new Vector2();

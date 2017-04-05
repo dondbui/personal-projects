@@ -68,8 +68,8 @@ namespace core.debug
 
                 if (i == 0)
                 {
-                    pos.x = 1;
-                    pos.y = 1;
+                    pos.x = 15;
+                    pos.y = 15;
                 }
 
                 GameObject go = UnitController.GetInstance().PlaceNewUnit("player" + i, "shipAssets_77", pos, false);
@@ -126,8 +126,8 @@ namespace core.debug
                 pos.x = randX;
                 pos.y = randY;
 
-                pos.x = 5;
-                pos.y = 5;
+                pos.x = 15;
+                pos.y = 12;
 
                 if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 2, 2))
                 {
