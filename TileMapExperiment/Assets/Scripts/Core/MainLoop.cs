@@ -53,6 +53,11 @@ public class MainLoop : MonoBehaviour
 
         TestController.GetInstance().RunTests();
 
+        Vector3 unitPos = UnitController.GetInstance().GetUnitByID("player0").transform.position;
+        unitPos.z = Camera.main.transform.position.z;
+
+        Camera.main.transform.position = unitPos;
+
         DateTime endDate = DateTime.Now;
 
         Debug.Log("Total Initialization Time: " + 
