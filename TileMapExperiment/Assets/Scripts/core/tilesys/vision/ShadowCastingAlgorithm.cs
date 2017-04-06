@@ -6,8 +6,35 @@ using UnityEngine;
 
 namespace core.tilesys.vision
 {
+    /// <summary>
+    /// This is the classic shadow casting field of vision algorithm that is
+    /// listed at: http://www.roguebasin.com/index.php?title=Shadow_casting
+    /// 
+    /// It divides up the vision into 8 octants and traverses the octant away
+    /// from the source of sight. The key to the success of this approach is
+    /// that is saves the current slope once you find a blocking tile. Using 
+    /// that saved slope we traverse that slope and sweep across until we see
+    /// light again. 
+    /// 
+    /// This specific example was heavily influenced by Andy Stobiski's 
+    /// implementation and article here: 
+    /// http://www.evilscience.co.uk/field-of-vision-using-recursive-shadow-casting-c-3-5-implementation/
+    /// </summary>
     public class ShadowCastingAlgorithm
     {
+        private static int MAX_DEPTH = 31;
+
+        private const int OCTANT_NNW = 1;
+        private const int OCTANT_NNE = 2;
+        private const int OCTANT_ENE = 3;
+        private const int OCTANT_ESE = 4;
+        private const int OCTANT_SSE = 5;
+        private const int OCTANT_SSW = 6;
+        private const int OCTANT_WSW = 7;
+        private const int OCTANT_WNW = 8;
+
+        private const double SLOPE_DELTA = 0.5;
+
         public static void Process(MapData currentMap, bool drawDebugLines)
         {
             int mapWidth = currentMap.GetWidth();
@@ -19,7 +46,10 @@ namespace core.tilesys.vision
 
             Vector2 startPos = pGuc.CurrentTilePos;
 
-            CheckOctant(1, startPos, 1.0, 0.0);
+            CheckOctant(OCTANT_NNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_NNE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_ENE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_ESE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
         }
 
         private static double GetSlope(double x1, double y1, double x2, double y2, bool invert)
@@ -30,330 +60,276 @@ namespace core.tilesys.vision
                 return (x1 - x2) / (y1 - y2);
         }
 
-
-        private static void CheckOctant(int depth, Vector2 startPos, double startSlope, double endSlope)
+        /// <summary>
+        /// Checks a given octant for vision pertaining to that octant
+        /// 
+        /// Octant data
+        ///
+        ///    \ 1 | 2 /
+        ///   8 \  |  / 3
+        ///   -----+-----
+        ///   7 /  |  \ 4
+        ///    / 6 | 5 \
+        ///
+        ///  1 = NNW, 2 =NNE, 3=ENE, 4=ESE, 5=SSE, 6=SSW, 7=WSW, 8 = WNW
+        /// </summary>
+        private static void CheckOctant(int octant, int depth, Vector2 startPos, int mapWidth, int mapHeight, double startSlope, double endSlope)
         {
             MapController mc = MapController.GetInstance();
             VisionController vc = VisionController.GetInstance();
             int[,] lightMap = VisionController.GetInstance().GetLightMap();
-            int y = (int)startPos.y - depth;
 
-            if (y < 0)
+            int x = 0;
+            int y = 0;
+
+            int pitch = (int)Math.Round(startSlope * (double)depth);
+
+            int tileIncre = 1;
+            bool checkHoriz = true;
+            bool invert = false;
+            
+            double xHitDelta = SLOPE_DELTA;
+            double yHitDelta = SLOPE_DELTA;
+            double xClearDelta = SLOPE_DELTA;
+            double yClearDelta = SLOPE_DELTA;
+            bool checkGreater = true;
+            switch (octant)
             {
-                y = 0;
+                case OCTANT_NNW:
+                    checkHoriz = true;
+                    checkGreater = true;
+                    invert = false;
+                    tileIncre = 1;
+
+                    xHitDelta = -SLOPE_DELTA;
+                    yHitDelta = SLOPE_DELTA;
+                    xClearDelta = -SLOPE_DELTA;
+                    yClearDelta = -SLOPE_DELTA;
+
+                    x = (int)startPos.x - pitch;
+                    y = (int)startPos.y - depth;
+                    break;
+                case OCTANT_NNE:
+                    checkHoriz = true;
+                    checkGreater = false;
+                    invert = false;
+                    tileIncre = -1;
+                    xHitDelta = SLOPE_DELTA;
+                    yHitDelta = SLOPE_DELTA;
+                    xClearDelta = SLOPE_DELTA;
+                    yClearDelta = -SLOPE_DELTA;
+                    x = (int)startPos.x + pitch;
+                    y = (int)startPos.y - depth;
+                    break;
+                case OCTANT_ENE:
+                    checkHoriz = false;
+                    checkGreater = false;
+                    invert = true;
+                    tileIncre = 1;
+                    xHitDelta = -SLOPE_DELTA;
+                    yHitDelta = -SLOPE_DELTA;
+                    xClearDelta = SLOPE_DELTA;
+                    yClearDelta = -SLOPE_DELTA;
+
+                    x = (int)startPos.x + depth;
+                    y = (int)startPos.y - pitch;
+                    break;
+                case OCTANT_ESE:
+                    checkHoriz = false;
+                    checkGreater = true;
+                    invert = true;
+                    tileIncre = -1;
+                    xHitDelta = -SLOPE_DELTA;
+                    yHitDelta = SLOPE_DELTA;
+                    xClearDelta = SLOPE_DELTA;
+                    yClearDelta = SLOPE_DELTA;
+
+                    x = (int)startPos.x + depth;
+                    y = (int)startPos.y + pitch;
+                    break;
             }
-            int x = (int)startPos.x - (int)Math.Round(startSlope * (double)depth);
-            if (x < 0) x = 0;
 
-            while (GetSlope(x, y, startPos.x, startPos.y, false) >= endSlope)
+            if (checkHoriz)
             {
-                
-                if (mc.IsTileBlockingVision(x,y)) //current cell blocked
+                if (y < 0)
                 {
-                    if (x - 1 >= 0 && !mc.IsTileBlockingVision(x - 1, y))
+                    y = 0;
+                }
+
+                if (x < 0)
+                {
+                    x = 0;
+                }
+
+                while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
+                {
+                    //Debug.Log("Checking Tile: " + x + ", " + y);
+
+                    // If the current tile is blocked then we need to flag this
+                    // specific one as visible and then do the recursion check
+                    // to see what else is visible. 
+                    if (mc.IsTileBlockingVision(x, y)) //current cell blocked
                     {
+                        // Find the edge block which happens to be when we run into
+                        // a situation where a block tile is adjacent to a visible
+                        // tile
+                        if (x - tileIncre >= 0 && !mc.IsTileBlockingVision(x - tileIncre, y))
+                        {
+                            lightMap[x, y] = VisionController.VISIBLE;
+                            vc.DrawMarkOnTile(x, y);
+
+                            //prior cell within range AND open...
+                            //...incremenet the depth, adjust the endslope and recurse
+                            CheckOctant(
+                                octant, 
+                                depth + 1, 
+                                startPos, 
+                                mapWidth, 
+                                mapHeight, 
+                                startSlope, 
+                                GetSlope(x + xHitDelta, y + yHitDelta, startPos.x, startPos.y, invert));
+                        }
+                    }
+                    else
+                    {
+                        if (x - tileIncre >= 0 && mc.IsTileBlockingVision(x - tileIncre, y))
+                        {
+                            //prior cell within range AND open...
+                            //..adjust the startslope
+                            startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
+
+                            if (HasNegativeSlopeOnHit(octant))
+                            {
+                                startSlope *= -1;
+                            }
+                        }
                         lightMap[x, y] = VisionController.VISIBLE;
+
                         vc.DrawMarkOnTile(x, y);
-
-                        //prior cell within range AND open...
-                        //...incremenet the depth, adjust the endslope and recurse
-                        CheckOctant(depth + 1, startPos, startSlope, GetSlope(x - 0.5, y + 0.5, startPos.x, startPos.y, false));
                     }
-                }
-                else
-                {
-                    if (x - 1 >= 0 && mc.IsTileBlockingVision(x - 1, y))
-                    {
-                        //prior cell within range AND open...
-                        //..adjust the startslope
-                        startSlope = GetSlope(x - 0.5, y - 0.5, startPos.x, startPos.y, false);
-                    }
-                    lightMap[x, y] = VisionController.VISIBLE;
 
-                    vc.DrawMarkOnTile(x, y);
+                    x += tileIncre;
                 }
-
-                x++;
+                x -= tileIncre;
             }
-            x--;
+            else
+            {
+                if (y < 0)
+                {
+                    y = 0;
+                }
 
+                
+                if (x < 0)
+                {
+                    x = 0;
+                }
+
+                while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
+                {
+                    //Debug.Log("Checking Tile: " + x + ", " + y);
+
+                    // If the current tile is blocked then we need to flag this
+                    // specific one as visible and then do the recursion check
+                    // to see what else is visible. 
+                    if (mc.IsTileBlockingVision(x, y)) //current cell blocked
+                    {
+                        // Find the edge block which happens to be when we run into
+                        // a situation where a block tile is adjacent to a visible
+                        // tile
+                        if (y - tileIncre >= 0 && !mc.IsTileBlockingVision(x, y - tileIncre))
+                        {
+                            lightMap[x, y] = VisionController.VISIBLE;
+                            vc.DrawMarkOnTile(x, y);
+
+                            CheckOctant(
+                                octant,
+                                depth + 1,
+                                startPos,
+                                mapWidth,
+                                mapHeight,
+                                startSlope,
+                                GetSlope(x + xHitDelta, y + yHitDelta, startPos.x, startPos.y, invert));
+                        }
+                    }
+                    else
+                    {
+                        if (y >= 0 && mc.IsTileBlockingVision(x, y - tileIncre))
+                        {
+                            startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
+
+                            if (HasNegativeSlopeOnHit(octant))
+                            {
+                                startSlope *= -1;
+                            }
+                        }
+                        lightMap[x, y] = VisionController.VISIBLE;
+
+                        vc.DrawMarkOnTile(x, y);
+                    }
+
+                    y += tileIncre;
+                }
+                y -= tileIncre;
+            }
+
+            // Clamp the X to the bounds of the map
             if (x < 0)
             {
                 x = 0;
             }
-            else if(x > 31)
+            else if(x > mapWidth - 1)
             {
-                x = 31;
+                x = mapWidth - 1;
             }
 
-
+            // Clamp the Y to the bounds of the map
             if (y < 0)
             {
                 y = 0;
             }
-            else if (y > 31)
+            else if (y > mapHeight - 1)
             {
-                y = 31;
+                y = mapHeight;
             }
-            if (depth < 16 && !mc.IsTileBlockingVision(x, y))
+
+            // Assuming we haven't hit the distance limit and the current tile isn't blocked
+            // then we should keep checking the next row/column
+            if (depth < MAX_DEPTH && !mc.IsTileBlockingVision(x, y))
             {
-                CheckOctant(depth + 1, startPos, startSlope, endSlope);
+                CheckOctant(octant, depth + 1, startPos, mapWidth, mapHeight, startSlope, endSlope);
             }
         }
 
+        /// <summary>
+        /// Is our slope still valid enough for us to continue iterating over the tiles
+        /// </summary>
+        private static bool IsValidSlope(int x, int y, Vector2 startPos, bool invert, double endSlope, bool checkGreater)
+        {
+            if (checkGreater)
+            {
+                return GetSlope(x, y, startPos.x, startPos.y, invert) >= endSlope;
+            }
 
-        //public static void Process(MapData currentMap, bool drawDebugLines)
-        //{
-        //    int mapWidth = currentMap.GetWidth();
-        //    int mapHeight = currentMap.GetHeight();
+            return GetSlope(x, y, startPos.x, startPos.y, invert) <= endSlope;
+        }
 
-        //    // Iterate through all of the player units and check their vision
-        //    UnitController uc = UnitController.GetInstance();
-        //    //List<GameObject> playerUnits = uc.GetAllPlayerUnits();
-        //    //for (int i = 0, count = playerUnits.Count; i < count; i++)
-        //    //{
+        /// <summary>
+        /// Should we flip the slope based on the octant?
+        /// </summary>
+        private static bool HasNegativeSlopeOnHit(int octant)
+        {
+            switch (octant)
+            {
+                case OCTANT_NNE:
+                case OCTANT_ENE:
+                case OCTANT_SSW:
+                case OCTANT_WSW:
+                    return true;
+            }
 
-        //    //}
-
-        //    GameObject gob = uc.GetUnitByID("player0");
-        //    GameUnitComponent pGuc = gob.GetComponent<GameUnitComponent>();
-
-        //    Vector2 startPos = pGuc.CurrentTilePos;
-
-        //    List<GameObject> visionBlockers = uc.GetAllVisionBlockingUnits();
-        //    Vector2 endPos = new Vector2();
-        //    for (int i = 0, count = visionBlockers.Count; i < count; i++)
-        //    {
-        //        GameObject vb = visionBlockers[i];
-        //        GameUnitComponent guc = vb.GetComponent<GameUnitComponent>();
-
-        //        Rect corners = guc.GetCorners();
-
-        //        // Raycast to the top left (5,5)
-        //        endPos.x = corners.x;
-        //        endPos.y = corners.y;
-        //        Debug.Log("Upper Left: " + endPos.ToString());
-        //        DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //        // Upper right (7, 5)
-        //        endPos.x = corners.xMax;
-        //        endPos.y = corners.yMin;
-        //        Debug.Log("Upper Right: " + endPos.ToString());
-        //        DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //        //// lower left
-        //        endPos.x = corners.x;
-        //        endPos.y = corners.yMax;
-        //        Debug.Log("Lower Left: " + endPos.ToString());
-        //        DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //        //// lower right
-        //        endPos.x = corners.xMax;
-        //        endPos.y = corners.yMax;
-        //        Debug.Log("Lower Right: " + endPos.ToString());
-        //        DrawBresenhamLine(startPos, endPos, drawDebugLines);
-        //    }
-
-        //    // Draw lines to the four corners
-        //    endPos.x = 0;
-        //    endPos.y = 0;
-        //    DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //    endPos.x = mapWidth - 1;
-        //    endPos.y = 0;
-        //    DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //    endPos.x = mapWidth - 1;
-        //    endPos.y = mapHeight - 1;
-        //    DrawBresenhamLine(startPos, endPos, drawDebugLines);
-
-        //    endPos.x = 0;
-        //    endPos.y = mapHeight - 1;
-        //    DrawBresenhamLine(startPos, endPos, drawDebugLines);
-        //}
-
-        ///// <summary>
-        ///// Draws the bresenham line and updates the light map data along the path.
-        ///// </summary>
-        ///// <param name="startPos"></param>
-        ///// <param name="endPos"></param>
-        ///// <param name="drawDebugLines"></param>
-        //public static void DrawBresenhamLine(Vector2 startPos, Vector2 endPos, bool drawDebugLines)
-        //{
-        //    float dX = endPos.x - startPos.x;
-        //    float dY = endPos.y - startPos.y;
-
-        //    float increment = 1f;
-
-        //    float directionX = dX > 0 ? increment : -increment;
-        //    float directionY = dY > 0 ? increment : -increment;
-
-        //    // Is it more of a flat slope?
-        //    bool checkHoriz = Math.Abs(dX) >= Math.Abs(dY);
-
-        //    float slope;
-        //    float pitch;
-
-        //    int[,] lightMap = VisionController.GetInstance().GetLightMap();
-
-        //    int width = lightMap.GetLength(0);
-        //    int height = lightMap.GetLength(1);
-
-        //    Debug.Log("Check Horiz: " + checkHoriz);
-
-        //    Vector2 debugEndPoint = new Vector2(startPos.x, startPos.y);
-
-        //    bool hitSomething = false;
-
-        //    // We have a flatter slope so let's traverse across the X-axis
-        //    if (checkHoriz)
-        //    {
-        //        slope = dY / dX;
-        //        pitch = startPos.y - (slope * startPos.x);
-
-        //        float x = startPos.x;
-        //        float y = startPos.y;
-
-        //        int count = Mathf.RoundToInt(Math.Abs(dX));
-
-        //        int tileX = 0;
-        //        int tileY = 0;
-
-        //        // Go through each step along the X-Axis to see if we run into a
-        //        // a blocking tile.
-        //        while(x >= 0 && x <= width)
-        //        {
-        //            y = (x * slope) + pitch;
-
-        //            tileX = Mathf.RoundToInt(x);
-        //            tileY = Mathf.RoundToInt(y);
-
-        //            // If out of bounds bounce out
-        //            if (tileX < 0 || tileX >= width ||
-        //                tileY < 0 || tileY >= height)
-        //            {
-        //                break;
-        //            }
-
-        //            if (!hitSomething)
-        //            {
-        //                debugEndPoint.x = x;
-        //                debugEndPoint.y = -y;
-        //            }
-
-        //            if (x == endPos.x && y == endPos.y)
-        //            {
-        //                Debug.Log("Hit corner: " + endPos.ToString());
-        //            }
-
-        //            // If we run into a blocking tile we're done no longer do we
-        //            // need to continue checking the ray
-        //            if (!hitSomething && !MapController.GetInstance().IsTileBlockingVision(tileX, tileY))
-        //            {
-        //                lightMap[tileX, tileY] = 1;
-        //            }
-        //            else
-        //            {
-        //                lightMap[tileX, tileY] = 0;
-
-        //                if (!hitSomething)
-        //                {
-        //                    lightMap[tileX, tileY] = 1;
-        //                }
-
-        //                hitSomething = true;
-        //            }
-
-        //            // Don't add anything at the last check since we don't want to
-        //            // overshoot our debug lines
-        //            x += directionX;
-        //        }
-
-        //        if (drawDebugLines)
-        //        {
-        //            DrawLine(startPos, new Vector2(x, -y));
-
-        //            if (hitSomething)
-        //            {
-        //                DrawLine(startPos, debugEndPoint);
-        //            }
-        //            else
-        //            {
-        //                DrawLine(startPos, new Vector2(endPos.x, -endPos.y));
-        //            }
-
-        //        }
-        //    }
-        //    // A steeper sloper so we should traverse vertically for better accuracy
-        //    else
-        //    {
-        //        slope = dX / dY;
-        //        pitch = startPos.x - (slope * startPos.y);
-
-        //        float x = startPos.x;
-        //        float y = startPos.y;
-
-        //        int count = Mathf.RoundToInt(Math.Abs(dY));
-
-        //        int tileX = 0;
-        //        int tileY = 0;
-
-        //        // Go through each step along the Y-Axis to see if we run into a
-        //        // block tile. WE keep checking until the edge of the map
-        //        while (y >= 0 && y <= height)
-        //        {
-        //            x = (y * slope) + pitch;
-
-        //            tileX = Mathf.RoundToInt(x);
-        //            tileY = Mathf.RoundToInt(y);
-
-        //            // If out of bounds bounce out
-        //            if (tileX < 0 || tileX >= width ||
-        //                tileY < 0 || tileY >= height)
-        //            {
-        //                break;
-        //            }
-
-        //            if (!hitSomething)
-        //            {
-        //                debugEndPoint.x = x;
-        //                debugEndPoint.y = -y;
-        //            }
-
-        //            // If we run into a blocking tile we're done no longer do we
-        //            // need to continue checking the ray
-        //            if (!hitSomething && !MapController.GetInstance().IsTileBlockingVision(tileX, tileY))
-        //            {
-        //                lightMap[tileX, tileY] = 1;
-        //            }
-        //            else
-        //            {
-        //                lightMap[tileX, tileY] = 0;
-        //                if (!hitSomething)
-        //                {
-        //                    lightMap[tileX, tileY] = 1;
-        //                }
-        //            }
-
-        //            y += directionY;
-
-        //        }
-
-        //        if (drawDebugLines)
-        //        {
-        //            DrawLine(startPos, new Vector2(x, -(y)));
-
-        //            if (hitSomething)
-        //            {
-        //                DrawLine(startPos, debugEndPoint);
-        //            }
-        //            else
-        //            {
-        //                DrawLine(startPos, new Vector2(endPos.x, -endPos.y));
-        //            }
-        //        }
-        //    }
-        //}
+            return false;
+        }
 
         private static void DrawLine(Vector2 startPos, Vector2 endPos)
         {
