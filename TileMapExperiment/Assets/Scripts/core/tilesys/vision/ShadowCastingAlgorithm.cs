@@ -22,7 +22,7 @@ namespace core.tilesys.vision
     /// </summary>
     public class ShadowCastingAlgorithm
     {
-        private static int MAX_DEPTH = 31;
+        private static int MAX_DEPTH = 64;
 
         private const int OCTANT_NNW = 1;
         private const int OCTANT_NNE = 2;
@@ -50,6 +50,10 @@ namespace core.tilesys.vision
             CheckOctant(OCTANT_NNE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
             CheckOctant(OCTANT_ENE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
             CheckOctant(OCTANT_ESE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_SSE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_SSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_WSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            CheckOctant(OCTANT_WNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
         }
 
         private static double GetSlope(double x1, double y1, double x2, double y2, bool invert)
@@ -108,6 +112,15 @@ namespace core.tilesys.vision
 
                     x = (int)startPos.x - pitch;
                     y = (int)startPos.y - depth;
+
+                    if (x < 0)
+                    {
+                        x = 0;
+                    }
+                    if (y < 0)
+                    {
+                        return;
+                    }
                     break;
                 case OCTANT_NNE:
                     checkHoriz = true;
@@ -120,6 +133,15 @@ namespace core.tilesys.vision
                     yClearDelta = -SLOPE_DELTA;
                     x = (int)startPos.x + pitch;
                     y = (int)startPos.y - depth;
+
+                    if (x > mapWidth - 1)
+                    {
+                        x = mapWidth - 1;
+                    }
+                    if (y < 0)
+                    {
+                        return;
+                    }
                     break;
                 case OCTANT_ENE:
                     checkHoriz = false;
@@ -133,6 +155,15 @@ namespace core.tilesys.vision
 
                     x = (int)startPos.x + depth;
                     y = (int)startPos.y - pitch;
+
+                    if (x > mapWidth - 1)
+                    {
+                        return;
+                    }
+                    if (y < 0)
+                    {
+                        y = 0;
+                    }
                     break;
                 case OCTANT_ESE:
                     checkHoriz = false;
@@ -146,21 +177,108 @@ namespace core.tilesys.vision
 
                     x = (int)startPos.x + depth;
                     y = (int)startPos.y + pitch;
+                    if (x > mapWidth - 1)
+                    {
+                        return;
+                    }
+                    if (y > mapHeight - 1)
+                    {
+                        y = mapHeight - 1;
+                    }
+                    break;
+                case OCTANT_SSE:
+                    checkHoriz = true;
+                    checkGreater = true;
+                    invert = false;
+                    tileIncre = -1;
+                    xHitDelta = SLOPE_DELTA;
+                    yHitDelta = -SLOPE_DELTA;
+                    xClearDelta = SLOPE_DELTA;
+                    yClearDelta = SLOPE_DELTA;
+
+                    x = (int)startPos.x + pitch;
+                    y = (int)startPos.y + depth;
+
+                    if (x > mapWidth - 1)
+                    {
+                        x = mapWidth - 1;
+                    }
+                    if (y > mapHeight - 1)
+                    {
+                        return;
+                    }
+                    break;
+                case OCTANT_SSW:
+                    checkHoriz = true;
+                    checkGreater = false;
+                    invert = false;
+                    tileIncre = 1;
+                    xHitDelta = -SLOPE_DELTA;
+                    yHitDelta = -SLOPE_DELTA;
+                    xClearDelta = SLOPE_DELTA;
+                    yClearDelta = SLOPE_DELTA;
+
+                    x = (int)startPos.x - pitch;
+                    y = (int)startPos.y + depth;
+
+                    if (x < 0)
+                    {
+                        x = 0;
+                    }
+                    if (y > mapHeight - 1)
+                    {
+                        return;
+                    }
+                    break;
+                case OCTANT_WSW:
+                    checkHoriz = false;
+                    checkGreater = false;
+                    invert = true;
+                    tileIncre = -1;
+                    xHitDelta = SLOPE_DELTA;
+                    yHitDelta = SLOPE_DELTA;
+                    xClearDelta = -SLOPE_DELTA;
+                    yClearDelta = SLOPE_DELTA;
+
+                    x = (int)startPos.x - depth;
+                    y = (int)startPos.y + pitch;
+
+                    if (x < 0)
+                    {
+                        return;
+                    }
+                    if (y > mapHeight - 1)
+                    {
+                        y = mapHeight - 1;
+                    }
+
+                    break;
+                case OCTANT_WNW:
+                    checkHoriz = false;
+                    checkGreater = true;
+                    invert = true;
+                    tileIncre = 1;
+                    xHitDelta = SLOPE_DELTA;
+                    yHitDelta = -SLOPE_DELTA;
+                    xClearDelta = -SLOPE_DELTA;
+                    yClearDelta = -SLOPE_DELTA;
+
+                    x = (int)startPos.x - depth;
+                    y = (int)startPos.y - pitch;
+                    
+                    if (x < 0)
+                    {
+                        return;
+                    }
+                    if (y < 0)
+                    {
+                        y = 0;
+                    }
                     break;
             }
 
             if (checkHoriz)
             {
-                if (y < 0)
-                {
-                    y = 0;
-                }
-
-                if (x < 0)
-                {
-                    x = 0;
-                }
-
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
                     //Debug.Log("Checking Tile: " + x + ", " + y);
@@ -175,8 +293,8 @@ namespace core.tilesys.vision
                         // tile
                         if (x - tileIncre >= 0 && !mc.IsTileBlockingVision(x - tileIncre, y))
                         {
-                            lightMap[x, y] = VisionController.VISIBLE;
-                            vc.DrawMarkOnTile(x, y);
+                            //lightMap[x, y] = VisionController.VISIBLE;
+                            //vc.DrawMarkOnTile(x, y);
 
                             //prior cell within range AND open...
                             //...incremenet the depth, adjust the endslope and recurse
@@ -214,17 +332,6 @@ namespace core.tilesys.vision
             }
             else
             {
-                if (y < 0)
-                {
-                    y = 0;
-                }
-
-                
-                if (x < 0)
-                {
-                    x = 0;
-                }
-
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
                     //Debug.Log("Checking Tile: " + x + ", " + y);
@@ -239,8 +346,8 @@ namespace core.tilesys.vision
                         // tile
                         if (y - tileIncre >= 0 && !mc.IsTileBlockingVision(x, y - tileIncre))
                         {
-                            lightMap[x, y] = VisionController.VISIBLE;
-                            vc.DrawMarkOnTile(x, y);
+                            //lightMap[x, y] = VisionController.VISIBLE;
+                            //vc.DrawMarkOnTile(x, y);
 
                             CheckOctant(
                                 octant,
