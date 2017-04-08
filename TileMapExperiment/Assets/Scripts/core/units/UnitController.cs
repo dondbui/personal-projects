@@ -54,20 +54,25 @@ namespace core.units
             return null;
         }
 
-        public GameObject GetUnitAtTile(Vector2 tilePos)
+        public GameObject GetUnitAtTile(int x, int y)
         {
             foreach (KeyValuePair<string, GameObject> entry in unitMap)
             {
                 GameObject currUnit = entry.Value;
                 GameUnitComponent guc = currUnit.GetComponent<GameUnitComponent>();
 
-                if (guc.IsUnitOnTile((int)tilePos.x, (int)tilePos.y))
+                if (guc.IsUnitOnTile(x, y))
                 {
                     return currUnit;
                 }
             }
 
             return null;
+        }
+
+        public GameObject GetUnitAtTile(Vector2 tilePos)
+        {
+            return GetUnitAtTile((int)tilePos.x, (int)tilePos.y);
         }
 
         /// <summary>

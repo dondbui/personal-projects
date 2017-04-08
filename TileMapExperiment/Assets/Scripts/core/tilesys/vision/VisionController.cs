@@ -5,6 +5,8 @@
 /// <date>March 23rd, 2017</date>
 /// ---------------------------------------------------------------------------
 
+using core.units;
+using System;
 using UnityEngine;
 
 namespace core.tilesys.vision
@@ -73,8 +75,6 @@ namespace core.tilesys.vision
                                 
                 GenerateShadowMesh();
             }
-
-            mapMesh.SetActive(false);
 
             // clear the light map
             ClearLightMap();
@@ -218,6 +218,29 @@ namespace core.tilesys.vision
             }
 
             lightTexture.Apply();
+        }
+
+        public void SetUnitVisible(GameObject visibleUnit)
+        {
+            GameUnitComponent guc = visibleUnit.GetComponent<GameUnitComponent>();
+            Vector2 currPos = guc.CurrentTilePos;
+
+            int startingX = Mathf.RoundToInt(currPos.x);
+            int startingY = Mathf.RoundToInt(currPos.y);
+
+            int width = guc.sizeX;
+            int height = guc.sizeY;
+
+            int xEnd = Math.Min(startingX + width, MapController.GetInstance().currentMap.GetWidth());
+            int yEnd = Math.Min(startingY + height, MapController.GetInstance().currentMap.GetHeight());
+
+            for (int x = startingX; x < xEnd; x++)
+            {
+                for (int y = startingY; y < yEnd; y++)
+                {
+                    lightMap[x, y] = VisionController.VISIBLE;
+                }
+            }
         }
 
         /// <summary>

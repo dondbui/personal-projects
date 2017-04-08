@@ -118,7 +118,7 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 40; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
@@ -128,26 +128,8 @@ namespace core.debug
 
                 if (i == 0)
                 {
-                    pos.x = 15;
+                    pos.x = 14;
                     pos.y = 12;
-                }
-                
-                if (i == 1)
-                {
-                    pos.x = 3;
-                    pos.y = 9;
-                }
-
-                if (i == 2)
-                {
-                    pos.x = 7;
-                    pos.y = 10;
-                }
-
-                if (i == 3)
-                {
-                    pos.x = 6;
-                    pos.y = 3;
                 }
 
                 if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 2, 2))

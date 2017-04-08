@@ -182,7 +182,18 @@ public class MainLoop : MonoBehaviour
 
         Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(clickPos);
 
-        UnitSelector.GetInstance().TrySelectingUnitAt(tilePos);
+        UnitSelector us = UnitSelector.GetInstance();
+
+        GameObject selectedUnit = us.GetCurrentlySelectedUnit();
+
+        if (selectedUnit == null)
+        {
+            UnitSelector.GetInstance().TrySelectingUnitAt(tilePos);
+        }
+        else
+        {
+            AnimController.GetInstance().ForceMoveUnitToTile(selectedUnit, tilePos);
+        }
     }
 
     private void CreateSelectionTile()

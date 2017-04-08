@@ -22,7 +22,7 @@ namespace core.tilesys.vision
     /// </summary>
     public class ShadowCastingAlgorithm
     {
-        private static int MAX_DEPTH = 64;
+        private static int MAX_DEPTH = 32;
 
         private const int OCTANT_NNW = 1;
         private const int OCTANT_NNE = 2;
@@ -35,33 +35,62 @@ namespace core.tilesys.vision
 
         private const double SLOPE_DELTA = 0.5;
 
+        private static List<GameObject> visibleObjects = new List<GameObject>();
+
+        private static bool enableDebugLines = false;
+
         public static void Process(MapData currentMap, bool drawDebugLines)
         {
             int mapWidth = currentMap.GetWidth();
             int mapHeight = currentMap.GetHeight();
 
+            visibleObjects.Clear();
+
+            enableDebugLines = drawDebugLines;
+
+            VisionController vc = VisionController.GetInstance();
             UnitController uc = UnitController.GetInstance();
-            GameObject gob = uc.GetUnitByID("player0");
-            GameUnitComponent pGuc = gob.GetComponent<GameUnitComponent>();
 
-            Vector2 startPos = pGuc.CurrentTilePos;
+            List<GameObject> playerUnits = uc.GetAllPlayerUnits();
 
-            CheckOctant(OCTANT_NNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_NNE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_ENE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_ESE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_SSE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_SSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_WSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
-            CheckOctant(OCTANT_WNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+            for (int i = 0, count = playerUnits.Count; i < count; i++)
+            {
+                GameObject gob = playerUnits[i];
+                GameUnitComponent pGuc = gob.GetComponent<GameUnitComponent>();
+                Vector2 startPos = pGuc.CurrentTilePos;
+
+                CheckOctant(OCTANT_NNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_NNE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_ENE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_ESE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_SSE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_SSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_WSW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+                CheckOctant(OCTANT_WNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
+
+                vc.SetUnitVisible(gob);
+            }
+
+            
+
+            for (int i = 0, count = visibleObjects.Count; i < count; i++)
+            {
+                //vc.SetUnitVisible(visibleObjects[i]);
+            }
+
+            enableDebugLines = false;
         }
 
         private static double GetSlope(double x1, double y1, double x2, double y2, bool invert)
         {
+            double slope;
+
             if (invert)
-                return (y1 - y2) / (x1 - x2);
+                slope = Math.Round((y1 - y2) / (x1 - x2), 2);
             else
-                return (x1 - x2) / (y1 - y2);
+                slope = Math.Round((x1 - x2) / (y1 - y2), 2);
+
+            return slope;
         }
 
         /// <summary>
@@ -86,7 +115,7 @@ namespace core.tilesys.vision
             int x = 0;
             int y = 0;
 
-            int pitch = (int)Math.Round(startSlope * (double)depth);
+            int pitch = Mathf.RoundToInt((float)startSlope * depth);
 
             int tileIncre = 1;
             bool checkHoriz = true;
@@ -110,8 +139,8 @@ namespace core.tilesys.vision
                     xClearDelta = -SLOPE_DELTA;
                     yClearDelta = -SLOPE_DELTA;
 
-                    x = (int)startPos.x - pitch;
-                    y = (int)startPos.y - depth;
+                    x = Mathf.RoundToInt(startPos.x - pitch);
+                    y = Mathf.RoundToInt(startPos.y - depth);
 
                     if (x < 0)
                     {
@@ -131,8 +160,8 @@ namespace core.tilesys.vision
                     yHitDelta = SLOPE_DELTA;
                     xClearDelta = SLOPE_DELTA;
                     yClearDelta = -SLOPE_DELTA;
-                    x = (int)startPos.x + pitch;
-                    y = (int)startPos.y - depth;
+                    x = Mathf.RoundToInt(startPos.x + pitch);
+                    y = Mathf.RoundToInt(startPos.y - depth);
 
                     if (x > mapWidth - 1)
                     {
@@ -153,8 +182,8 @@ namespace core.tilesys.vision
                     xClearDelta = SLOPE_DELTA;
                     yClearDelta = -SLOPE_DELTA;
 
-                    x = (int)startPos.x + depth;
-                    y = (int)startPos.y - pitch;
+                    x = Mathf.RoundToInt(startPos.x + depth);
+                    y = Mathf.RoundToInt(startPos.y - pitch);
 
                     if (x > mapWidth - 1)
                     {
@@ -175,8 +204,8 @@ namespace core.tilesys.vision
                     xClearDelta = SLOPE_DELTA;
                     yClearDelta = SLOPE_DELTA;
 
-                    x = (int)startPos.x + depth;
-                    y = (int)startPos.y + pitch;
+                    x = Mathf.RoundToInt(startPos.x + depth);
+                    y = Mathf.RoundToInt(startPos.y + pitch);
                     if (x > mapWidth - 1)
                     {
                         return;
@@ -196,8 +225,8 @@ namespace core.tilesys.vision
                     xClearDelta = SLOPE_DELTA;
                     yClearDelta = SLOPE_DELTA;
 
-                    x = (int)startPos.x + pitch;
-                    y = (int)startPos.y + depth;
+                    x = Mathf.RoundToInt(startPos.x + pitch);
+                    y = Mathf.RoundToInt(startPos.y + depth);
 
                     if (x > mapWidth - 1)
                     {
@@ -218,8 +247,8 @@ namespace core.tilesys.vision
                     xClearDelta = SLOPE_DELTA;
                     yClearDelta = SLOPE_DELTA;
 
-                    x = (int)startPos.x - pitch;
-                    y = (int)startPos.y + depth;
+                    x = Mathf.RoundToInt(startPos.x - pitch);
+                    y = Mathf.RoundToInt(startPos.y + depth);
 
                     if (x < 0)
                     {
@@ -240,8 +269,8 @@ namespace core.tilesys.vision
                     xClearDelta = -SLOPE_DELTA;
                     yClearDelta = SLOPE_DELTA;
 
-                    x = (int)startPos.x - depth;
-                    y = (int)startPos.y + pitch;
+                    x = Mathf.RoundToInt(startPos.x - depth);
+                    y = Mathf.RoundToInt(startPos.y + pitch);
 
                     if (x < 0)
                     {
@@ -263,8 +292,8 @@ namespace core.tilesys.vision
                     xClearDelta = -SLOPE_DELTA;
                     yClearDelta = -SLOPE_DELTA;
 
-                    x = (int)startPos.x - depth;
-                    y = (int)startPos.y - pitch;
+                    x = Mathf.RoundToInt(startPos.x - depth);
+                    y = Mathf.RoundToInt(startPos.y - pitch);
                     
                     if (x < 0)
                     {
@@ -281,8 +310,10 @@ namespace core.tilesys.vision
             {
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
-                    //Debug.Log("Checking Tile: " + x + ", " + y);
-
+                    if (enableDebugLines)
+                    {
+                        //Debug.Log("Checking Tile: " + x + ", " + y);
+                    }
                     // If the current tile is blocked then we need to flag this
                     // specific one as visible and then do the recursion check
                     // to see what else is visible. 
@@ -291,13 +322,21 @@ namespace core.tilesys.vision
                         // Find the edge block which happens to be when we run into
                         // a situation where a block tile is adjacent to a visible
                         // tile
-                        if (x - tileIncre >= 0 && !mc.IsTileBlockingVision(x - tileIncre, y))
+                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 && !mc.IsTileBlockingVision(x - tileIncre, y))
                         {
-                            //lightMap[x, y] = VisionController.VISIBLE;
-                            //vc.DrawMarkOnTile(x, y);
+                            GameObject hitObject = UnitController.GetInstance().GetUnitAtTile(x, y);
+                            if (hitObject != null)
+                            {
+                                visibleObjects.Add(hitObject);
+                            }
 
-                            //prior cell within range AND open...
-                            //...incremenet the depth, adjust the endslope and recurse
+                            lightMap[x, y] = VisionController.VISIBLE;
+
+                            if (enableDebugLines)
+                            {
+                                vc.DrawMarkOnTile(x, y);
+                            }
+
                             CheckOctant(
                                 octant, 
                                 depth + 1, 
@@ -310,10 +349,13 @@ namespace core.tilesys.vision
                     }
                     else
                     {
-                        if (x - tileIncre >= 0 && mc.IsTileBlockingVision(x - tileIncre, y))
+                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 && mc.IsTileBlockingVision(x - tileIncre, y))
                         {
-                            //prior cell within range AND open...
-                            //..adjust the startslope
+                            lightMap[x - tileIncre, y] = VisionController.VISIBLE;
+                            if (enableDebugLines)
+                            {
+                                vc.DrawMarkOnTile(x - tileIncre, y);
+                            }
                             startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
 
                             if (HasNegativeSlopeOnHit(octant))
@@ -323,7 +365,10 @@ namespace core.tilesys.vision
                         }
                         lightMap[x, y] = VisionController.VISIBLE;
 
-                        vc.DrawMarkOnTile(x, y);
+                        if (enableDebugLines)
+                        {
+                            vc.DrawMarkOnTile(x, y);
+                        }
                     }
 
                     x += tileIncre;
@@ -334,8 +379,10 @@ namespace core.tilesys.vision
             {
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
-                    //Debug.Log("Checking Tile: " + x + ", " + y);
-
+                    if (enableDebugLines)
+                    {
+                        //Debug.Log("Checking Tile: " + x + ", " + y);
+                    }
                     // If the current tile is blocked then we need to flag this
                     // specific one as visible and then do the recursion check
                     // to see what else is visible. 
@@ -344,10 +391,19 @@ namespace core.tilesys.vision
                         // Find the edge block which happens to be when we run into
                         // a situation where a block tile is adjacent to a visible
                         // tile
-                        if (y - tileIncre >= 0 && !mc.IsTileBlockingVision(x, y - tileIncre))
+                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight - 1 && !mc.IsTileBlockingVision(x, y - tileIncre))
                         {
-                            //lightMap[x, y] = VisionController.VISIBLE;
-                            //vc.DrawMarkOnTile(x, y);
+                            GameObject hitObject = UnitController.GetInstance().GetUnitAtTile(x, y);
+                            if (hitObject != null)
+                            {
+                                visibleObjects.Add(hitObject);
+                            }
+                            lightMap[x, y] = VisionController.VISIBLE;
+
+                            if (enableDebugLines)
+                            {
+                                vc.DrawMarkOnTile(x, y);
+                            }
 
                             CheckOctant(
                                 octant,
@@ -361,8 +417,14 @@ namespace core.tilesys.vision
                     }
                     else
                     {
-                        if (y >= 0 && mc.IsTileBlockingVision(x, y - tileIncre))
+                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight -1 && mc.IsTileBlockingVision(x, y - tileIncre))
                         {
+                            lightMap[x, y - tileIncre] = VisionController.VISIBLE;
+                            if (enableDebugLines)
+                            {
+                                vc.DrawMarkOnTile(x, y - tileIncre);
+                            }
+
                             startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
 
                             if (HasNegativeSlopeOnHit(octant))
@@ -372,7 +434,10 @@ namespace core.tilesys.vision
                         }
                         lightMap[x, y] = VisionController.VISIBLE;
 
-                        vc.DrawMarkOnTile(x, y);
+                        if (enableDebugLines)
+                        {
+                            vc.DrawMarkOnTile(x, y);
+                        }
                     }
 
                     y += tileIncre;
@@ -413,12 +478,18 @@ namespace core.tilesys.vision
         /// </summary>
         private static bool IsValidSlope(int x, int y, Vector2 startPos, bool invert, double endSlope, bool checkGreater)
         {
+            double slope;
+
             if (checkGreater)
             {
-                return GetSlope(x, y, startPos.x, startPos.y, invert) >= endSlope;
+                slope = GetSlope(x, y, startPos.x, startPos.y, invert);
+                
+                return slope >= endSlope;
             }
 
-            return GetSlope(x, y, startPos.x, startPos.y, invert) <= endSlope;
+            slope = GetSlope(x, y, startPos.x, startPos.y, invert);
+
+            return slope <= endSlope;
         }
 
         /// <summary>
