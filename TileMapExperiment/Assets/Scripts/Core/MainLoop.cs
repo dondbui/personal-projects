@@ -188,11 +188,12 @@ public class MainLoop : MonoBehaviour
 
         if (selectedUnit == null)
         {
-            UnitSelector.GetInstance().TrySelectingUnitAt(tilePos);
+            us.TrySelectingUnitAt(tilePos);
         }
         else
         {
             AnimController.GetInstance().ForceMoveUnitToTile(selectedUnit, tilePos);
+            us.Deselect();
         }
     }
 

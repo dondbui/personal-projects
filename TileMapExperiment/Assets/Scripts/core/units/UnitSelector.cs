@@ -85,7 +85,7 @@ public class UnitSelector
     /// <summary>
     /// Moves the selection tile and sizes it to match the unit size
     /// </summary>
-    private void MoveSelectionTileToUnit(GameObject unit)
+    public void MoveSelectionTileToUnit(GameObject unit)
     {
         GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
         selectionScale.x = guc.sizeX;
@@ -97,7 +97,7 @@ public class UnitSelector
         selectionTile.transform.position = unit.transform.position;
     }
 
-    private void Deselect()
+    public void Deselect()
     {
         selectionTile.SetActive(false);
         currSelectedUnit = null;
