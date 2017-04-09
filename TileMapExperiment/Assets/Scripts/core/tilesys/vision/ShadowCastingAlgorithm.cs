@@ -1,4 +1,10 @@
-﻿
+﻿/// ---------------------------------------------------------------------------
+/// ShadowCastingAlgorithm.cs
+/// 
+/// <author>Don Duy Bui</author>
+/// <date>March 27th, 2017</date>
+/// ---------------------------------------------------------------------------
+
 using core.units;
 using System;
 using System.Collections.Generic;
@@ -59,6 +65,8 @@ namespace core.tilesys.vision
                 GameUnitComponent pGuc = gob.GetComponent<GameUnitComponent>();
                 Vector2 startPos = pGuc.CurrentTilePos;
 
+                // Could do it as a for loop but for ease of debugging, I call it out
+                // individually. 
                 CheckOctant(OCTANT_NNW, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
                 CheckOctant(OCTANT_NNE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
                 CheckOctant(OCTANT_ENE, 1, startPos, mapWidth, mapHeight, 1.0, 0.0);
@@ -71,26 +79,7 @@ namespace core.tilesys.vision
                 vc.SetUnitVisible(gob);
             }
 
-            
-
-            for (int i = 0, count = visibleObjects.Count; i < count; i++)
-            {
-                //vc.SetUnitVisible(visibleObjects[i]);
-            }
-
             enableDebugLines = false;
-        }
-
-        private static double GetSlope(double x1, double y1, double x2, double y2, bool invert)
-        {
-            double slope;
-
-            if (invert)
-                slope = Math.Round((y1 - y2) / (x1 - x2), 2);
-            else
-                slope = Math.Round((x1 - x2) / (y1 - y2), 2);
-
-            return slope;
         }
 
         /// <summary>
@@ -308,28 +297,34 @@ namespace core.tilesys.vision
 
             if (checkHoriz)
             {
+                // Check to make sure we aren't done sweeping the row. 
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
-                    if (enableDebugLines)
-                    {
-                        //Debug.Log("Checking Tile: " + x + ", " + y);
-                    }
                     // If the current tile is blocked then we need to flag this
                     // specific one as visible and then do the recursion check
                     // to see what else is visible. 
                     if (mc.IsTileBlockingVision(x, y)) //current cell blocked
                     {
                         // Find the edge block which happens to be when we run into
-                        // a situation where a block tile is adjacent to a visible
-                        // tile
-                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 && !mc.IsTileBlockingVision(x - tileIncre, y))
+                        // a situation where a block tile is adjacent on the X-axis 
+                        // to a visible tile.
+                        //
+                        // Also make sure we're still within bounds of the map 
+                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 
+                            && !mc.IsTileBlockingVision(x - tileIncre, y))
                         {
+                            // Figure out what object we hit that is blocking vision
                             GameObject hitObject = UnitController.GetInstance().GetUnitAtTile(x, y);
                             if (hitObject != null)
                             {
+                                // Keep track of the vision blocker for later so we can know what
+                                // units are visible to player.
                                 visibleObjects.Add(hitObject);
                             }
 
+                            // Light this tile up since even though it is a blocking tile, it's
+                            // the tile facing the vision unit and we can see this tile, we just
+                            // can't see what's past this tile. 
                             lightMap[x, y] = VisionController.VISIBLE;
 
                             if (enableDebugLines)
@@ -337,6 +332,7 @@ namespace core.tilesys.vision
                                 vc.DrawMarkOnTile(x, y);
                             }
 
+                            // Recursively check the slope cast by the vision blocking tile. 
                             CheckOctant(
                                 octant, 
                                 depth + 1, 
@@ -347,22 +343,35 @@ namespace core.tilesys.vision
                                 GetSlope(x + xHitDelta, y + yHitDelta, startPos.x, startPos.y, invert));
                         }
                     }
+                    // So we didn't hit anything so let's check to make sure we're not in the area of the
+                    // shadow cast.
                     else
                     {
-                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 && mc.IsTileBlockingVision(x - tileIncre, y))
+                        // Check to make sure we're still on the map
+                        // and
+                        // If we're adjacent to a blocking tile next to us
+                        if (x - tileIncre >= 0 && x - tileIncre <= mapWidth - 1 && 
+                            mc.IsTileBlockingVision(x - tileIncre, y))
                         {
+                            // If we're adjacent to the blocking tile then that means we can see that
+                            // blocking tile but not what's beyond it so light it up.
                             lightMap[x - tileIncre, y] = VisionController.VISIBLE;
                             if (enableDebugLines)
                             {
                                 vc.DrawMarkOnTile(x - tileIncre, y);
                             }
+
+                            // Recursively check the slop of the shadow cast
                             startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
 
+                            // Depending on the octant we may need to flip the slope. 
                             if (HasNegativeSlopeOnHit(octant))
                             {
                                 startSlope *= -1;
                             }
                         }
+
+                        // Light up this tile since it's not a blocked one. 
                         lightMap[x, y] = VisionController.VISIBLE;
 
                         if (enableDebugLines)
@@ -377,12 +386,9 @@ namespace core.tilesys.vision
             }
             else
             {
+                // Check to make sure we haven't hit the finished sweeping the column
                 while (IsValidSlope(x, y, startPos, invert, endSlope, checkGreater))
                 {
-                    if (enableDebugLines)
-                    {
-                        //Debug.Log("Checking Tile: " + x + ", " + y);
-                    }
                     // If the current tile is blocked then we need to flag this
                     // specific one as visible and then do the recursion check
                     // to see what else is visible. 
@@ -391,13 +397,22 @@ namespace core.tilesys.vision
                         // Find the edge block which happens to be when we run into
                         // a situation where a block tile is adjacent to a visible
                         // tile
-                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight - 1 && !mc.IsTileBlockingVision(x, y - tileIncre))
+                        //
+                        // Also check to make sure we're still within the bounds of the map. 
+                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight - 1 
+                            && !mc.IsTileBlockingVision(x, y - tileIncre))
                         {
+                            // Check to see if we hit a unit. 
                             GameObject hitObject = UnitController.GetInstance().GetUnitAtTile(x, y);
                             if (hitObject != null)
                             {
+                                // Save this object for later so we can know which units this
+                                // vision unit is able to see. 
                                 visibleObjects.Add(hitObject);
                             }
+
+                            // Technically this a vision blocking tile but it is still visible
+                            // to the vision unit and not in the shadow cast. So light it up.
                             lightMap[x, y] = VisionController.VISIBLE;
 
                             if (enableDebugLines)
@@ -405,6 +420,8 @@ namespace core.tilesys.vision
                                 vc.DrawMarkOnTile(x, y);
                             }
 
+                            // Recursively check the new slope since we don't want to light
+                            // up the shadow cast area so no need to check them. 
                             CheckOctant(
                                 octant,
                                 depth + 1,
@@ -415,23 +432,39 @@ namespace core.tilesys.vision
                                 GetSlope(x + xHitDelta, y + yHitDelta, startPos.x, startPos.y, invert));
                         }
                     }
-                    else
+                    else // So we didn't hit a blocking tile.
                     {
-                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight -1 && mc.IsTileBlockingVision(x, y - tileIncre))
+                        // Make sure we're in the map bounds
+                        // 
+                        // Also check if the adjacent tile on the Y-Axis is blocking.
+                        // if it is then we're at the other side of the shadow cast.
+                        if (y - tileIncre >= 0 && y - tileIncre <= mapHeight -1 
+                            && mc.IsTileBlockingVision(x, y - tileIncre))
                         {
+                            // Light up the adjacent tile since though it is on 
+                            // a blocking tile, it's still on the vision ray cast
+                            // of this vision unit. Which means it's not technically
+                            // in the shadow cast but rather the one casting the 
+                            // shadow. So light that guy up.
                             lightMap[x, y - tileIncre] = VisionController.VISIBLE;
                             if (enableDebugLines)
                             {
                                 vc.DrawMarkOnTile(x, y - tileIncre);
                             }
 
+                            // Get the new slope for this side of the shadow cast so 
+                            // we don't check tile within the shadow cast area.
                             startSlope = GetSlope(x + xClearDelta, y + yClearDelta, startPos.x, startPos.y, invert);
 
+                            // For certain octants we need to flip the slope to ensure
+                            // we have the right slope.
                             if (HasNegativeSlopeOnHit(octant))
                             {
                                 startSlope *= -1;
                             }
                         }
+
+                        // Tile not blocking vision? Light it up.
                         lightMap[x, y] = VisionController.VISIBLE;
 
                         if (enableDebugLines)
@@ -474,6 +507,25 @@ namespace core.tilesys.vision
         }
 
         /// <summary>
+        /// Get the slope of the given points
+        /// </summary>
+        private static double GetSlope(double x1, double y1, double x2, double y2, bool invert)
+        {
+            double slope;
+
+            if (invert)
+            {
+                slope = Math.Round((y1 - y2) / (x1 - x2), 2);
+            }
+            else
+            {
+                slope = Math.Round((x1 - x2) / (y1 - y2), 2);
+            }
+
+            return slope;
+        }
+
+        /// <summary>
         /// Is our slope still valid enough for us to continue iterating over the tiles
         /// </summary>
         private static bool IsValidSlope(int x, int y, Vector2 startPos, bool invert, double endSlope, bool checkGreater)
@@ -507,41 +559,6 @@ namespace core.tilesys.vision
             }
 
             return false;
-        }
-
-        private static void DrawLine(Vector2 startPos, Vector2 endPos)
-        {
-            Vector2 worldStart = MapCoordinateUtils.GetTileToWorldPosition(startPos);
-
-            Debug.Log("Drawing from: " + startPos.ToString() + " ----> " + endPos.ToString());
-
-            Debug.DrawLine(worldStart, endPos, Color.yellow, 3f, false);
-
-            DrawX(endPos);
-        }
-
-        private static void DrawX(Vector2 pos)
-        {
-            Vector2 startPos = new Vector2();
-            Vector2 endPos = new Vector2();
-
-            float offset = 0.1f;
-
-            /// make the \
-            startPos.x = pos.x - offset;
-            startPos.y = (pos.y - offset);
-            endPos.x = pos.x + offset;
-            endPos.y = (pos.y + offset);
-
-            Debug.DrawLine(startPos, endPos, Color.yellow, 3f, false);
-
-            // make the /
-            startPos.x = pos.x + offset;
-            startPos.y = (pos.y - offset);
-            endPos.x = pos.x - offset;
-            endPos.y = (pos.y + offset);
-
-            Debug.DrawLine(startPos, endPos, Color.yellow, 3f, false);
         }
     }
 }
