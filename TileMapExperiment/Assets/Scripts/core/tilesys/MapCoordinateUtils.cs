@@ -74,8 +74,8 @@ namespace core.tilesys
         {
             Vector2 returnPos = new Vector2();
 
-            returnPos.x = worldPos.x - 0.5f;
-            returnPos.y = (worldPos.y + 0.5f) * -1f;
+            returnPos.x = Mathf.RoundToInt(worldPos.x - 0.5f);
+            returnPos.y = Mathf.RoundToInt((worldPos.y + 0.5f) * -1f);
 
             return returnPos;
         }
