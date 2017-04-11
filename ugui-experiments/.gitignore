@@ -1,11 +1,9 @@
-TileMapExperiment/Temp/
-
-TileMapExperiment/[Ll]ibrary/
-TileMapExperiment/[Tt]emp/
-TileMapExperiment/[Oo]bj/
-TileMapExperiment/[Bb]uild/
-TileMapExperiment/[Bb]uilds/
-TileMapExperiment/Assets/AssetStoreTools*
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+Assets/AssetStoreTools*
 
 # Visual Studio 2015 cache directory
 /.vs/
