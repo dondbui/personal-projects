@@ -17,7 +17,11 @@ This project is for my own personal experimentation with tilemap systems using U
 - Vision map updates during unit movement
 - Vision map data draws to a transparent texture to overlay on top of the map
 - Edge-Tile Raycasting Algorithm support for checking vision
+![Edge-Tile Raycasting](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/raycasting.png)
+
 - Recursive Shadow Casting Algorithm support for checking vision
+![Recursive Shadow Casting](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/recursive-shadow-casting.png)
+
 - Optional debugging option to see rays cast or tiles lit
 
 ##### Sources:
