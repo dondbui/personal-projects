@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.debug;
+using core.tilesys.pathing;
 using core.units;
 using System;
 using System.Text;
@@ -21,7 +22,14 @@ namespace core.tilesys
 
         private static MapController instance;
 
+        /// <summary>
+        /// Handles the pathing logic and visualization
+        /// </summary>
+        public PathingController pathingController;
+
+        /// <summary>
         /// Stores the bounding box of the world. 
+        /// </summary>
         public static Rect CAMERA_BOUND = new Rect();
 
         /// <summary>
@@ -44,7 +52,7 @@ namespace core.tilesys
 
         private MapController()
         {
-
+            pathingController = new PathingController();
         }
 
         /// <summary>

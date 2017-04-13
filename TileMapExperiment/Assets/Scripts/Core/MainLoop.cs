@@ -193,6 +193,7 @@ public class MainLoop : MonoBehaviour
         else
         {
             AnimController.GetInstance().ForceMoveUnitToTile(selectedUnit, tilePos);
+            MapController.GetInstance().pathingController.PlotPath(selectedUnit, tilePos);
             us.Deselect();
         }
     }
