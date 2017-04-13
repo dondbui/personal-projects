@@ -60,6 +60,10 @@ namespace core.units
         /// </summary>
         public List<Vector2> pendingDestinations = new List<Vector2>();
 
+        /// <summary>
+        /// Retrieves the current position in tile space. Each get does
+        /// return a new Vector2 so don't use this too often.
+        /// </summary>
         public Vector2 CurrentTilePos
         {
             get
