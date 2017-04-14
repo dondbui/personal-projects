@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.units;
+using System;
 using UnityEngine;
 
 namespace core.tilesys.pathing
@@ -17,6 +18,8 @@ namespace core.tilesys.pathing
     public class PathingController
     {
         private const float DURATION = 2f;
+
+        private PathArrow arrow;
 
         public PathingController()
         {
@@ -48,14 +51,26 @@ namespace core.tilesys.pathing
             DrawMarkOnTile(x + xDelta, y + yDelta, Color.cyan);
 
             // draw the vertical
-            for (int i = 0;  i != yDelta; i += yIncre)
+
+            int yCount = Math.Abs(yDelta);
+            for (int i = 0;  i <= yCount; i++)
             {
-                DrawMarkOnTile(x, y + i, Color.yellow);
+                DrawMarkOnTile(x, y + i * yIncre, Color.yellow);
             }
 
-            for (int i = xIncre; i != xDelta; i += xIncre)
+            int xCount = Math.Abs(xDelta);
+            for (int i = 0; i <= xCount; i++)
             {
-                DrawMarkOnTile(x + i, y + yDelta, Color.yellow);
+                DrawMarkOnTile(x + i * xIncre, y + yDelta, Color.yellow);
+            }
+
+            if (arrow == null)
+            {
+                arrow = new PathArrow(currPos, tilePos);
+            }
+            else
+            {
+                arrow.Update(currPos, tilePos);
             }
         }
 
