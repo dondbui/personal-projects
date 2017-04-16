@@ -93,6 +93,7 @@ public class MainLoop : MonoBehaviour
         assetManager.PreloadSpriteSheet("Textures/selectionTile");
         assetManager.PreloadSpriteSheet("Textures/boss1");
         assetManager.PreloadSpriteSheet("Textures/asteroid");
+        assetManager.PreloadSpriteSheet("Textures/pathingArrows");
     }
 
     /// <summary>
