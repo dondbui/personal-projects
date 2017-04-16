@@ -82,7 +82,10 @@ namespace core.tilesys.pathing
             }
 
             // mark the mid point
-            AddTile(x, y + yDelta, false, false);
+            if (xDelta != 0 && yDelta != 0)
+            {
+                AddTile(x, y + yDelta, false, false);
+            }
 
             end = Math.Abs(xDelta);
             for (int i = 1; i < end; i++)
@@ -185,8 +188,11 @@ namespace core.tilesys.pathing
                 case PathArrowTileEnum.BottomToLeft:
                     AddElbow(SPRITE_BtL);
                     break;
-                default:
-                    AddStraight(true);
+                case PathArrowTileEnum.EndArrowUp:
+                case PathArrowTileEnum.EndArrowDown:
+                case PathArrowTileEnum.EndArrowLeft:
+                case PathArrowTileEnum.EndArrowRight:
+                    AddEndArrow(type);
                     break;
             }
         }
@@ -264,6 +270,49 @@ namespace core.tilesys.pathing
 
             //Bottom left of tile in atlas
             uvArray.Add(bottomLeft);
+        }
+
+        private void AddEndArrow(PathArrowTileEnum type)
+        {
+            float xSlot = SPRITE_END % numSpritesX;
+            float ySlot = numSpritesY - ((int)(SPRITE_END / numSpritesX));
+
+            Vector2 topLeft = new Vector2(xSlot / numSpritesX, ySlot / numSpritesY);
+            Vector2 topRight = new Vector2((xSlot + 1f) / numSpritesX, ySlot / numSpritesY);
+            Vector2 bottomRight = new Vector2((xSlot + 1f) / numSpritesX, (ySlot - 1f) / numSpritesY);
+            Vector2 bottomLeft = new Vector2(xSlot / numSpritesX, (ySlot - 1f) / numSpritesY);
+
+            if (type == PathArrowTileEnum.EndArrowDown)
+            {
+                uvArray.Add(topLeft);
+                uvArray.Add(topRight);
+                uvArray.Add(bottomRight);
+                uvArray.Add(bottomLeft);
+                return;
+            }
+
+            if (type == PathArrowTileEnum.EndArrowUp)
+            {
+                uvArray.Add(bottomRight);
+                uvArray.Add(bottomLeft);
+                uvArray.Add(topLeft);
+                uvArray.Add(topRight);
+                return;
+            }
+
+            if (type == PathArrowTileEnum.EndArrowLeft)
+            {
+                uvArray.Add(bottomLeft);
+                uvArray.Add(topLeft);
+                uvArray.Add(topRight);
+                uvArray.Add(bottomRight);
+                return;
+            }
+
+            uvArray.Add(topRight);
+            uvArray.Add(bottomRight);
+            uvArray.Add(bottomLeft);
+            uvArray.Add(topLeft);
         }
 
         private PathArrowTileEnum GetArrowTileType(PathArrowTileNode curr, PathArrowTileNode prev, PathArrowTileNode next)
