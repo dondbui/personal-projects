@@ -15,7 +15,7 @@ namespace core.tilesys.pathing
     {
         private const int TILE_SIZE = 1;
 
-        private const int ARROW_SPRITE_SIZE = 16;
+        private const int ARROW_SPRITE_SIZE = 32;
 
         private const int SPRITE_STR = 0;
         private const int SPRITE_TtR = 1;
