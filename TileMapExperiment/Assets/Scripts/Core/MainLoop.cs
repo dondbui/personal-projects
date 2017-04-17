@@ -9,6 +9,7 @@ using core.anim;
 using core.assets;
 using core.debug;
 using core.tilesys;
+using core.tilesys.pathing;
 using core.units;
 using System;
 using UnityEngine;
@@ -82,6 +83,7 @@ public class MainLoop : MonoBehaviour
 
         UnitController.GetInstance().Update();
         AnimController.GetInstance().Update();
+        MapController.GetInstance().pathingController.Update();
     }
 
     private void PreloadAssets()
@@ -194,7 +196,8 @@ public class MainLoop : MonoBehaviour
         else
         {
             AnimController.GetInstance().ForceMoveUnitToTile(selectedUnit, tilePos);
-            MapController.GetInstance().pathingController.PlotPath(selectedUnit, tilePos);
+            //MapController.GetInstance().pathingController.PlotPath(selectedUnit, tilePos);
+            MapController.GetInstance().pathingController.ClearArrow();
             us.Deselect();
         }
     }

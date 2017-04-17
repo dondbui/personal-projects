@@ -11,10 +11,19 @@ using UnityEngine;
 
 namespace core.tilesys.pathing
 {
+    /// <summary>
+    /// Handles the creation/updating of the arrow indicating the path
+    /// of a unit's movement. 
+    /// </summary>
     public class PathArrow
     {
         private const int TILE_SIZE = 1;
 
+        /// <summary>
+        /// The width/height pixel size of each tile in the path arrow spritesheet
+        /// 
+        /// TODO: Move this to config file. 
+        /// </summary>
         private const int ARROW_SPRITE_SIZE = 32;
 
         private const int SPRITE_STR = 0;
@@ -31,9 +40,20 @@ namespace core.tilesys.pathing
         private Mesh arrowMesh;
         private MeshFilter meshFilter;
 
+        /// <summary>
+        /// Keeps tracks of the vertices used to create the mesh
+        /// </summary>
         List<Vector3> vertices = new List<Vector3>();
-        List<Vector2> uvArray = new List<Vector2>();
+
+        /// <summary>
+        /// Keeps track of the triangle vert order for the mesh
+        /// </summary>
         List<int> triangles = new List<int>();
+
+        /// <summary>
+        /// Keeps track of the UV coordinates for the mesh
+        /// </summary>
+        List<Vector2> uvArray = new List<Vector2>();
 
         LinkedList<PathArrowTileNode> pathNodes = new LinkedList<PathArrowTileNode>();
 
@@ -50,6 +70,8 @@ namespace core.tilesys.pathing
             int texWidth = mat.mainTexture.width;
             int texHeight = mat.mainTexture.height;
 
+            // Figure out how many sprites the sprite sheet has
+            // then cache it so we don't need to calculate this often
             numSpritesX = texWidth / ARROW_SPRITE_SIZE;
             numSpritesY = texHeight / ARROW_SPRITE_SIZE;
 
@@ -68,6 +90,11 @@ namespace core.tilesys.pathing
             int xDelta = Mathf.RoundToInt(endPos.x - startPos.x);
             int yDelta = Mathf.RoundToInt(endPos.y - startPos.y);
 
+            if (xDelta == 0 && yDelta == 0)
+            {
+                return;
+            }
+
             int xIncre = xDelta > 0 ? 1 : -1;
             int yIncre = yDelta > 0 ? 1 : -1;
 
@@ -81,20 +108,11 @@ namespace core.tilesys.pathing
                 AddTile(x, y + i * yIncre, false, true);
             }
 
-            // mark the mid point
-            if (xDelta != 0 && yDelta != 0)
-            {
-                AddTile(x, y + yDelta, false, false);
-            }
-
             end = Math.Abs(xDelta);
-            for (int i = 1; i < end; i++)
+            for (int i = 0; i <= end; i++)
             {
                 AddTile(x + i * xIncre, y + yDelta, false, false);
             }
-
-            // draw the destination
-            AddTile(x + xDelta, y + yDelta, true, false);
 
             CreateUVCoordinates();
 
@@ -107,14 +125,28 @@ namespace core.tilesys.pathing
 
         public void Clear()
         {
+            // Clear out the path nodes before we create new ones
+            pathNodes.Clear();
+
+            // Clear out everything
             vertices.Clear();
             triangles.Clear();
             uvArray.Clear();
             arrowMesh.Clear(false);
 
-            pathNodes.Clear();
+            // Set everything again to update the mesh
+            arrowMesh.vertices = vertices.ToArray();
+            arrowMesh.triangles = triangles.ToArray();
+            meshFilter.mesh = arrowMesh;
+            meshFilter.mesh.uv = uvArray.ToArray();
         }
 
+        /// <summary>
+        /// Creates the UV coordinates for the pathing arrow mesh by iterating 
+        /// through the path and determining what texture segment to use based
+        /// on what is the movement delta between the current, previous and next
+        /// tile.
+        /// </summary>
         private void CreateUVCoordinates()
         {
             LinkedListNode<PathArrowTileNode> node = pathNodes.First;
@@ -123,8 +155,8 @@ namespace core.tilesys.pathing
                 // Check the previous and the next one
                 PathArrowTileNode prev = node.Previous != null ? node.Previous.Value : null;
                 PathArrowTileNode next = node.Next != null ? node.Next.Value : null;
+                
                 // Determine what type of tile to display
-
                 PathArrowTileEnum tileType = GetArrowTileType(node.Value, prev, next);
 
                 AddUVForTile(tileType);
@@ -137,10 +169,7 @@ namespace core.tilesys.pathing
         private void AddTile(int x, int y, bool isFinal, bool isVert)
         {
             AddVerticesAtTilePos(x, y);
-            pathNodes.AddLast(new PathArrowTileNode(x, y, PathArrowTileEnum.Horizontal));
-            
-
-            //AddUVForTile(x, y, isFinal, isVert);
+            pathNodes.AddLast(new PathArrowTileNode(x, y));
         }
 
         private void AddVerticesAtTilePos(int x, int y)
@@ -211,6 +240,10 @@ namespace core.tilesys.pathing
             AddStraight(isVert);
         }
 
+        /// <summary>
+        /// Adds a straight piece though we need to rotate the texture
+        /// if it's a horizontal piece. 
+        /// </summary>
         private void AddStraight(bool isVert)
         {
             Vector2 topLeft = new Vector2(SPRITE_STR / numSpritesX, 1f);
@@ -249,6 +282,10 @@ namespace core.tilesys.pathing
             }
         }
 
+        /// <summary>
+        /// Adds an elbow piece of the arrow path sprite since these
+        /// are very specific, we don't have to worry about orientation
+        /// </summary>
         private void AddElbow(int spriteIndex)
         {
             float xSlot = spriteIndex % numSpritesX;
@@ -272,6 +309,11 @@ namespace core.tilesys.pathing
             uvArray.Add(bottomLeft);
         }
 
+        /// <summary>
+        /// Adds an end arrow UV coordinate set but rotates the vertex
+        /// order based on what orientation the arrow is meant to be. 
+        /// </summary>
+        /// <param name="type"></param>
         private void AddEndArrow(PathArrowTileEnum type)
         {
             float xSlot = SPRITE_END % numSpritesX;
@@ -315,14 +357,19 @@ namespace core.tilesys.pathing
             uvArray.Add(topLeft);
         }
 
-        private PathArrowTileEnum GetArrowTileType(PathArrowTileNode curr, PathArrowTileNode prev, PathArrowTileNode next)
+        /// <summary>
+        /// Determines what pathing arrow sprite we should use based on the
+        /// context of the current position, previous, and next. 
+        /// </summary>
+        private PathArrowTileEnum GetArrowTileType(
+            PathArrowTileNode curr, PathArrowTileNode prev, PathArrowTileNode next)
         {
             if (next == null)
             {
                 // Vertical
                 if (prev.x == curr.x)
                 {
-                    // Downward moevment
+                    // Downward movement
                     if (curr.y > prev.y)
                     {
                         return PathArrowTileEnum.EndArrowDown;
@@ -331,15 +378,13 @@ namespace core.tilesys.pathing
                     // otherwise assume up
                     return PathArrowTileEnum.EndArrowUp;
                 }
-                else
+                // Horizontal
+                if (curr.x > prev.x)
                 {
-                    if (curr.x > prev.x)
-                    {
-                        return PathArrowTileEnum.EndArrowRight;
-                    }
-
-                    return PathArrowTileEnum.EndArrowLeft;
+                    return PathArrowTileEnum.EndArrowRight;
                 }
+
+                return PathArrowTileEnum.EndArrowLeft;
             }
 
             // No previous? then we don't need to worry about elbow pieces
@@ -350,10 +395,8 @@ namespace core.tilesys.pathing
                 {
                     return PathArrowTileEnum.Vertical;
                 }
-                else
-                {
-                    return PathArrowTileEnum.Horizontal;
-                }
+
+                return PathArrowTileEnum.Horizontal;
             }
 
             // No delta on X? then it's a vertical
@@ -380,26 +423,18 @@ namespace core.tilesys.pathing
                     {
                         return PathArrowTileEnum.TopToRight;
                     }
+
                     // otherwise assume we're going to the left
-                    else
-                    {
-                        return PathArrowTileEnum.TopToLeft;
-                    }
+                    return PathArrowTileEnum.TopToLeft;
                 }
                 // Handle the going south and turning
-                else
+                // If it's going to the right
+                if (next.x > curr.x)
                 {
-                    // If it's going to the right
-                    if (next.x > curr.x)
-                    {
-                        return PathArrowTileEnum.BottomToRight;
-                    }
-                    // otherwise assume we're going to the left
-                    else
-                    {
-                        return PathArrowTileEnum.BottomToLeft;
-                    }
+                    return PathArrowTileEnum.BottomToRight;
                 }
+                // otherwise assume we're going to the left
+                return PathArrowTileEnum.BottomToLeft;
             }
 
             // Handle the horizontal to vertical transitions
@@ -414,24 +449,16 @@ namespace core.tilesys.pathing
                     {
                         return PathArrowTileEnum.BottomToLeft;
                     }
-                    else
-                    {
-                        return PathArrowTileEnum.TopToLeft;
-                    }
+
+                    return PathArrowTileEnum.TopToLeft;
                 }
                 // Assume it's going to the left
-                else
+                // It's turned upward
+                if (next.y > curr.y)
                 {
-                    // It's turned upward
-                    if (next.y > curr.y)
-                    {
-                        return PathArrowTileEnum.BottomToRight;
-                    }
-                    else
-                    {
-                        return PathArrowTileEnum.TopToRight;
-                    }
+                    return PathArrowTileEnum.BottomToRight;
                 }
+                return PathArrowTileEnum.TopToRight;
             }
 
             return PathArrowTileEnum.Horizontal;

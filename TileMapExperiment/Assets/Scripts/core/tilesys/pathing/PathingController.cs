@@ -26,6 +26,20 @@ namespace core.tilesys.pathing
 
         }
 
+        public void Update()
+        {
+            GameObject selectedUnit = UnitSelector.GetInstance().GetCurrentlySelectedUnit();
+
+            if (selectedUnit != null)
+            {
+                Vector3 mousePos = Input.mousePosition;
+
+                Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(mousePos);
+
+                PlotPath(selectedUnit, tilePos);
+            }
+        }
+
         /// <summary>
         /// Plots out the path using debug lines
         /// </summary>
@@ -35,35 +49,6 @@ namespace core.tilesys.pathing
 
             Vector2 currPos = guc.CurrentTilePos;
 
-            int xDelta = Mathf.RoundToInt(tilePos.x - currPos.x);
-            int yDelta = Mathf.RoundToInt(tilePos.y - currPos.y);
-
-            int xIncre = xDelta > 0 ? 1 : -1;
-            int yIncre = yDelta > 0 ? 1 : -1;
-
-            int x = (int)currPos.x;
-            int y = (int)currPos.y;
-
-            // mark the mid point
-            DrawMarkOnTile(x, y + yDelta, Color.cyan);
-
-            // draw the destination
-            DrawMarkOnTile(x + xDelta, y + yDelta, Color.cyan);
-
-            // draw the vertical
-
-            int yCount = Math.Abs(yDelta);
-            for (int i = 0;  i <= yCount; i++)
-            {
-                DrawMarkOnTile(x, y + i * yIncre, Color.yellow);
-            }
-
-            int xCount = Math.Abs(xDelta);
-            for (int i = 0; i <= xCount; i++)
-            {
-                DrawMarkOnTile(x + i * xIncre, y + yDelta, Color.yellow);
-            }
-
             if (arrow == null)
             {
                 arrow = new PathArrow(currPos, tilePos);
@@ -72,6 +57,17 @@ namespace core.tilesys.pathing
             {
                 arrow.Update(currPos, tilePos);
             }
+        }
+
+        public void ClearArrow()
+        {
+            if (arrow == null)
+            {
+                return;
+            }
+
+            arrow.Clear();
+            
         }
 
         /// <summary>

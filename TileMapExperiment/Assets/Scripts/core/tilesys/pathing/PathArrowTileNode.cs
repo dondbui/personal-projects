@@ -11,13 +11,11 @@ namespace core.tilesys.pathing
     {
         public int x;
         public int y;
-        public PathArrowTileEnum type;
 
-        public PathArrowTileNode(int x, int y, PathArrowTileEnum type)
+        public PathArrowTileNode(int x, int y)
         {
             this.x = x;
             this.y = y;
-            this.type = type;
         }
     }
 }
