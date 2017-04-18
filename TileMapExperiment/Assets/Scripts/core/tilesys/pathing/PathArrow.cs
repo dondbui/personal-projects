@@ -60,7 +60,6 @@ namespace core.tilesys.pathing
         public PathArrow(Vector2 startPos, Vector2 endPos)
         {
             arrowObj = new GameObject();
-            arrowObj.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
             meshFilter = arrowObj.AddComponent<MeshFilter>();
 
             Material mat = Resources.Load<Material>("Materials/pathingArrows");
@@ -175,9 +174,9 @@ namespace core.tilesys.pathing
         private void AddVerticesAtTilePos(int x, int y)
         {
             vertices.Add(new Vector3(x, y, 0)); //  top left
-            vertices.Add(new Vector3(x + TILE_SIZE, y, 0)); // top right
-            vertices.Add(new Vector3(x + TILE_SIZE, y + TILE_SIZE, 0)); // bottom right
             vertices.Add(new Vector3(x, y + TILE_SIZE, 0)); // bottom left
+            vertices.Add(new Vector3(x + TILE_SIZE, y + TILE_SIZE, 0)); // bottom right
+            vertices.Add(new Vector3(x + TILE_SIZE, y, 0)); // top right
 
             int topLeft = vertices.Count - 4;
             int topRight = topLeft + 1;
@@ -206,15 +205,19 @@ namespace core.tilesys.pathing
                     AddStraight(true);
                     break;
                 case PathArrowTileEnum.TopToRight:
+                    Debug.Log("TopToRight");
                     AddElbow(SPRITE_TtR);
                     break;
                 case PathArrowTileEnum.TopToLeft:
+                    Debug.Log("TopToLeft");
                     AddElbow(SPRITE_TtL);
                     break;
                 case PathArrowTileEnum.BottomToRight:
+                    Debug.Log("BottomToRight");
                     AddElbow(SPRITE_BtR);
                     break;
                 case PathArrowTileEnum.BottomToLeft:
+                    Debug.Log("BottomToLeft");
                     AddElbow(SPRITE_BtL);
                     break;
                 case PathArrowTileEnum.EndArrowUp:
@@ -257,25 +260,25 @@ namespace core.tilesys.pathing
                 // Top left of tile in atlas
                 uvArray.Add(topLeft);
 
-                // Top right of tile in atlas
-                uvArray.Add(topRight);
+                //Bottom left of tile in atlas
+                uvArray.Add(bottomLeft);
 
                 // Bottom right of tile in atlas
                 uvArray.Add(bottomRight);
 
-                //Bottom left of tile in atlas
-                uvArray.Add(bottomLeft);
+                // Top right of tile in atlas
+                uvArray.Add(topRight);
             }
             else // If it's horizontal we gotta rotate the straigt piece
             {
-                //Bottom left of tile in atlas
-                uvArray.Add(bottomLeft);
+                // Top right of tile in atlas
+                uvArray.Add(topRight);
 
                 // Top left of tile in atlas
                 uvArray.Add(topLeft);
 
-                // Top right of tile in atlas
-                uvArray.Add(topRight);
+                //Bottom left of tile in atlas
+                uvArray.Add(bottomLeft);
 
                 // Bottom right of tile in atlas
                 uvArray.Add(bottomRight);
@@ -295,6 +298,9 @@ namespace core.tilesys.pathing
             Vector2 topRight = new Vector2((xSlot + 1f) / numSpritesX, ySlot / numSpritesY);
             Vector2 bottomRight = new Vector2((xSlot + 1f) / numSpritesX, (ySlot - 1f) / numSpritesY);
             Vector2 bottomLeft = new Vector2(xSlot / numSpritesX, (ySlot - 1f) / numSpritesY);
+            
+            //Bottom left of tile in atlas
+            uvArray.Add(bottomLeft);
 
             // Top left of tile in atlas
             uvArray.Add(topLeft);
@@ -304,9 +310,6 @@ namespace core.tilesys.pathing
 
             // Bottom right of tile in atlas
             uvArray.Add(bottomRight);
-
-            //Bottom left of tile in atlas
-            uvArray.Add(bottomLeft);
         }
 
         /// <summary>
@@ -326,35 +329,36 @@ namespace core.tilesys.pathing
 
             if (type == PathArrowTileEnum.EndArrowDown)
             {
+                uvArray.Add(bottomLeft);
                 uvArray.Add(topLeft);
                 uvArray.Add(topRight);
                 uvArray.Add(bottomRight);
-                uvArray.Add(bottomLeft);
+
                 return;
             }
 
             if (type == PathArrowTileEnum.EndArrowUp)
             {
-                uvArray.Add(bottomRight);
-                uvArray.Add(bottomLeft);
                 uvArray.Add(topLeft);
+                uvArray.Add(bottomLeft);
+                uvArray.Add(bottomRight);
                 uvArray.Add(topRight);
                 return;
             }
 
             if (type == PathArrowTileEnum.EndArrowLeft)
             {
+                uvArray.Add(bottomRight);
                 uvArray.Add(bottomLeft);
                 uvArray.Add(topLeft);
                 uvArray.Add(topRight);
-                uvArray.Add(bottomRight);
                 return;
             }
 
             uvArray.Add(topRight);
-            uvArray.Add(bottomRight);
-            uvArray.Add(bottomLeft);
             uvArray.Add(topLeft);
+            uvArray.Add(bottomLeft);
+            uvArray.Add(bottomRight);
         }
 
         /// <summary>
@@ -370,7 +374,7 @@ namespace core.tilesys.pathing
                 if (prev.x == curr.x)
                 {
                     // Downward movement
-                    if (curr.y > prev.y)
+                    if (curr.y < prev.y)
                     {
                         return PathArrowTileEnum.EndArrowDown;
                     }
@@ -416,7 +420,7 @@ namespace core.tilesys.pathing
                 next.y == curr.y)   // Make sure it's horizontal
             {
                 // Handle the going up and then turning
-                if (curr.y < prev.y) 
+                if (curr.y > prev.y) 
                 {
                     // If it's going to the right
                     if (next.x > curr.x)
@@ -445,7 +449,7 @@ namespace core.tilesys.pathing
                 if (curr.x > prev.x)
                 {
                     // It's turned upward
-                    if (next.y > curr.y)
+                    if (next.y < curr.y)
                     {
                         return PathArrowTileEnum.BottomToLeft;
                     }
@@ -454,7 +458,7 @@ namespace core.tilesys.pathing
                 }
                 // Assume it's going to the left
                 // It's turned upward
-                if (next.y > curr.y)
+                if (next.y < curr.y)
                 {
                     return PathArrowTileEnum.BottomToRight;
                 }
