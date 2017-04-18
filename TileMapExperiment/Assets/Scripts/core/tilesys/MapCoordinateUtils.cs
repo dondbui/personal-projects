@@ -41,7 +41,7 @@ namespace core.tilesys
             Vector2 newPos = new Vector2();
 
             newPos.x = x + 0.5f;
-            newPos.y = -(y + 0.5f);
+            newPos.y = (y + 0.5f);
 
             return newPos;
         }
@@ -64,7 +64,7 @@ namespace core.tilesys
                 // Debug.Log(hit.collider.name + ": " + hit.point.x + ", " + hit.point.y);
 
                 returnPos.x = Mathf.FloorToInt(hit.point.x);
-                returnPos.y = -Mathf.CeilToInt(hit.point.y);
+                returnPos.y = Mathf.FloorToInt(hit.point.y);
             }
 
             return returnPos;
@@ -75,7 +75,7 @@ namespace core.tilesys
             Vector2 returnPos = new Vector2();
 
             returnPos.x = Mathf.RoundToInt(worldPos.x - 0.5f);
-            returnPos.y = Mathf.RoundToInt((worldPos.y + 0.5f) * -1f);
+            returnPos.y = Mathf.RoundToInt((worldPos.y - 0.5f));
 
             return returnPos;
         }

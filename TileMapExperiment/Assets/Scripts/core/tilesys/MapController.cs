@@ -79,9 +79,9 @@ namespace core.tilesys
 
             // Setup the bounds of the world
             CAMERA_BOUND.x = -1;
-            CAMERA_BOUND.y = -1 - currentMap.GetHeight();
-            CAMERA_BOUND.width = currentMap.GetWidth();
-            CAMERA_BOUND.height = currentMap.GetHeight();
+            CAMERA_BOUND.y = -1;
+            CAMERA_BOUND.width = currentMap.GetWidth() + 1;
+            CAMERA_BOUND.height = currentMap.GetHeight() + 1;
 
             // Generate the tile mesh
             mapMesh = TileMeshGenerator.GetInstance().GenerateMesh(currentMap);

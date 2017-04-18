@@ -43,9 +43,9 @@ namespace core.debug
             PlacePlayerUnits();
 
             //RandomlyPlaceEnemies();
-            RandomlyPlaceAsteroids();
+            //RandomlyPlaceAsteroids();
 
-            VisionController.GetInstance().UpdateVisionTiles();
+            //VisionController.GetInstance().UpdateVisionTiles();
         }
 
         /// <summary>

@@ -31,7 +31,6 @@ namespace core.tilesys
 
             return instance;
         }
-
         /// <summary>
         /// Reads the given csv file path name in. Reminder though, since this
         /// uses the 
@@ -53,9 +52,9 @@ namespace core.tilesys
 
             string[,] tileMapLayout = null;
 
-            // After we've split things up by row, let's split things up by 
-            // the comma
-            for (int y = 0, wCount = rows.Length; y < wCount; y++)
+            // Go through from the bottom up since Unity likes a right up coordinate
+            // system and tile prefers a right down we gotta compensate for that. 
+            for (int y = tileHeight - 1; y >= 0; y--)
             {
                 // Used to handle an empty row due to the extra new line
                 // added by Tiled
@@ -80,13 +79,12 @@ namespace core.tilesys
                 // to the two dimensional array. 
                 for (int x = 0, hCount = columns.Length; x < hCount; x++)
                 {
-                    tileMapLayout[y, x] = columns[x];
+                    tileMapLayout[x, tileHeight - y - 1] = columns[x];
                 }
             }
 
             return tileMapLayout;
         }
-        
     }
 }
 

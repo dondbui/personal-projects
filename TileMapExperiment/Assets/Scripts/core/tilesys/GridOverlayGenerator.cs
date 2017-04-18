@@ -40,8 +40,6 @@ namespace core.tilesys
             GameObject mapMesh = new GameObject();
             mapMesh.name = GRID_GAME_OBJ_NAME;
 
-            mapMesh.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
-
             int numTilesX = mapData.GetWidth();
             int numTilesY = mapData.GetHeight();
 
@@ -58,9 +56,10 @@ namespace core.tilesys
                 for (y = 0; y < numTilesY; y++)
                 {
                     vertices[iVertCount + 0] = new Vector3(x, y, 0); //  top left
-                    vertices[iVertCount + 1] = new Vector3(x + TILE_SIZE, y, 0); // top right
+                    vertices[iVertCount + 1] = new Vector3(x, y + TILE_SIZE, 0); // bottom left
                     vertices[iVertCount + 2] = new Vector3(x + TILE_SIZE, y + TILE_SIZE, 0); // bottom right
-                    vertices[iVertCount + 3] = new Vector3(x, y + TILE_SIZE, 0); // bottom left
+                    vertices[iVertCount + 3] = new Vector3(x + TILE_SIZE, y, 0); // top right
+                   
                     iVertCount += 4;
                 }
             }

@@ -84,7 +84,7 @@ namespace core.units
 
             Rect corners = new Rect();
             corners.x = currWorldPos.x - (sizeX / 2);
-            corners.y = -currWorldPos.y - (sizeY / 2);
+            corners.y = currWorldPos.y - (sizeY / 2);
 
             corners.width = sizeX;
             corners.height = sizeY;
