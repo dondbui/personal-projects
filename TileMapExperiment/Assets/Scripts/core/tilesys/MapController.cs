@@ -241,8 +241,11 @@ namespace core.tilesys
             int width = guc.sizeX;
             int height = guc.sizeY;
 
-            int xEnd = Math.Min(startingX + width, MapController.GetInstance().currentMap.GetWidth());
-            int yEnd = Math.Min(startingY - height, MapController.GetInstance().currentMap.GetHeight());
+            int mapWidth = currentMap.GetWidth();
+            int mapHeight = currentMap.GetWidth();
+
+            int xEnd = Mathf.Clamp(startingX + width, 0, mapWidth);
+            int yEnd = Mathf.Clamp(startingY - height, -1, mapHeight);
 
             for (int x = startingX; x < xEnd; x++)
             {
