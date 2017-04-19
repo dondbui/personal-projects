@@ -80,8 +80,8 @@ namespace core.tilesys.vision
             ClearLightMap();
 
             // Run the algorithm for updating the light map array.
-            //EdgeTileRaycastAlgorithm.Process(currentMap, drawDebugLines);
-            ShadowCastingAlgorithm.Process(currentMap, drawDebugLines);
+            EdgeTileRaycastAlgorithm.Process(currentMap, drawDebugLines);
+            //ShadowCastingAlgorithm.Process(currentMap, drawDebugLines);
 
             // Now based off of the light map array data we update
             // the texture used to visualize the light map. 
@@ -103,8 +103,6 @@ namespace core.tilesys.vision
             mapMesh = new GameObject();
             mapMesh.name = "lightMap";
 
-            mapMesh.transform.rotation = Quaternion.AngleAxis(180, Vector3.right);
-
             MapController mapCon = MapController.GetInstance();
 
             MapData currentMap = mapCon.currentMap;
@@ -118,10 +116,11 @@ namespace core.tilesys.vision
             Vector3[] vertices = new Vector3[numVerts];
             Vector2[] UVArray = new Vector2[numVerts];
 
+
             vertices[0] = new Vector3(0, 0, 0); //  top left
-            vertices[1] = new Vector3(mapWidth, 0, 0); // top right
+            vertices[1] = new Vector3(0, mapHeight, 0); // bottom left
             vertices[2] = new Vector3(mapWidth, mapHeight, 0); // bottom right
-            vertices[3] = new Vector3(0, mapHeight, 0); // bottom left
+            vertices[3] = new Vector3(mapWidth, 0, 0); // top right
 
             int[] triangles = new int[numTriangles];
 
@@ -151,14 +150,18 @@ namespace core.tilesys.vision
             // Top left of tile in atlas
             UVArray[0] = new Vector2(0, 0);
 
-            // Top right of tile in atlas
-            UVArray[1] = new Vector2(1, 0);
+            //Bottom left of tile in atlas
+            UVArray[1] = new Vector2(0, 1);
 
             // Bottom right of tile in atlas
             UVArray[2] = new Vector2(1, 1);
 
-            //Bottom left of tile in atlas
-            UVArray[3] = new Vector2(0, 1);
+            // Top right of tile in atlas
+            UVArray[3] = new Vector2(1, 0);
+
+            
+
+            
 
             meshFilter.mesh.uv = UVArray;
         }
@@ -263,17 +266,17 @@ namespace core.tilesys.vision
 
             /// make the \
             startPos.x = x;
-            startPos.y = -y;
+            startPos.y = y;
             endPos.x = x + 1f;
-            endPos.y = -y - 1f;
+            endPos.y = y + 1f;
 
             Debug.DrawLine(startPos, endPos, Color.yellow, DURATION, false);
 
             // make the /
             startPos.x = x + 1f;
-            startPos.y = -y;
+            startPos.y = y;
             endPos.x = x;
-            endPos.y = -y - 1f;
+            endPos.y = y + 1f;
 
             Debug.DrawLine(startPos, endPos, Color.yellow, DURATION, false);
         }

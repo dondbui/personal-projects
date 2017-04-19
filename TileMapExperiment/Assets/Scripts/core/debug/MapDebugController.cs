@@ -36,17 +36,17 @@ namespace core.debug
         {
             /// make the \
             startPos.x = pos.x;
-            startPos.y = -pos.y;
+            startPos.y = pos.y;
             endPos.x = pos.x + 1f;
-            endPos.y = -pos.y - 1f;
+            endPos.y = pos.y + 1f;
 
             Debug.DrawLine(startPos, endPos, Color.red, 1f, false);
 
             // make the /
             startPos.x = pos.x + 1f;
-            startPos.y = -pos.y;
+            startPos.y = pos.y;
             endPos.x = pos.x;
-            endPos.y = -pos.y - 1f;
+            endPos.y = pos.y + 1f;
 
             Debug.DrawLine(startPos, endPos, Color.red, 1f, false);
         }
