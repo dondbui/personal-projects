@@ -126,8 +126,8 @@ namespace core.units
                 return false;
             }
 
-            if (y < currentPos.y ||  // Check if we're less than the unit's starting y
-                y > currentPos.y + (sizeY - 1)) // Check if they've overshot
+            if (y > currentPos.y ||  // Check if we're less than the unit's starting y
+                y < currentPos.y - (sizeY - 1)) // Check if they've overshot
             {
                 return false;
             }

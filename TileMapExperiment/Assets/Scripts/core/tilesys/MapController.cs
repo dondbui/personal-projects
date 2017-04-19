@@ -242,11 +242,11 @@ namespace core.tilesys
             int height = guc.sizeY;
 
             int xEnd = Math.Min(startingX + width, MapController.GetInstance().currentMap.GetWidth());
-            int yEnd = Math.Min(startingY + height, MapController.GetInstance().currentMap.GetHeight());
+            int yEnd = Math.Min(startingY - height, MapController.GetInstance().currentMap.GetHeight());
 
             for (int x = startingX; x < xEnd; x++)
             {
-                for (int y = startingY; y < yEnd; y++)
+                for (int y = startingY; y > yEnd; y--)
                 {
                     occupiedTileMap[x, y] = guc.blocksVision ? OCCUPIED_BLOCKS : OCCUPIED;
                 }
