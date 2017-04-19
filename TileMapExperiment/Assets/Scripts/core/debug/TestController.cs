@@ -135,7 +135,7 @@ namespace core.debug
                 if (i == 1)
                 {
                     pos.x = 14;
-                    pos.y = 12;
+                    pos.y = 1;
                 }
 
                 if (MapController.GetInstance().IsTileRangeOccupied(randX, randY, 2, 2))
