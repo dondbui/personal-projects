@@ -80,8 +80,8 @@ namespace core.tilesys.vision
             ClearLightMap();
 
             // Run the algorithm for updating the light map array.
-            EdgeTileRaycastAlgorithm.Process(currentMap, drawDebugLines);
-            //ShadowCastingAlgorithm.Process(currentMap, drawDebugLines);
+            //EdgeTileRaycastAlgorithm.Process(currentMap, drawDebugLines);
+            ShadowCastingAlgorithm.Process(currentMap, drawDebugLines);
 
             // Now based off of the light map array data we update
             // the texture used to visualize the light map. 

@@ -118,7 +118,7 @@ namespace core.debug
             int width = MapController.GetInstance().currentMap.GetWidth();
             int height = MapController.GetInstance().currentMap.GetHeight();
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 24; i++)
             {
                 int randX = UnityEngine.Random.Range(0, width);
                 int randY = UnityEngine.Random.Range(0, height);
