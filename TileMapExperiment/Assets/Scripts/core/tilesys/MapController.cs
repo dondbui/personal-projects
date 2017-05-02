@@ -89,6 +89,8 @@ namespace core.tilesys
             gridOverlay = GridOverlayGenerator.GetInstance().GenerateMesh(currentMap);
 
             occupiedTileMap = new int[currentMap.GetWidth(), currentMap.GetHeight()];
+
+            pathingController.search.GenerateMapGraph(currentMap);
         }
 
         public void PrintOutOccupiedTiles()

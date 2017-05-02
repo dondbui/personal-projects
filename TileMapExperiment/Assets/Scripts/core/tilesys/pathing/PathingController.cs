@@ -21,9 +21,11 @@ namespace core.tilesys.pathing
 
         private PathArrow arrow;
 
+        public BreadthFirstSearch search;
+
         public PathingController()
         {
-
+            search = new BreadthFirstSearch();
         }
 
         public void Update()
