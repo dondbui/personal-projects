@@ -91,6 +91,7 @@ namespace core.tilesys
             occupiedTileMap = new int[currentMap.GetWidth(), currentMap.GetHeight()];
 
             pathingController.search.GenerateMapGraph(currentMap);
+            pathingController.search.Calculate();
         }
 
         public void PrintOutOccupiedTiles()

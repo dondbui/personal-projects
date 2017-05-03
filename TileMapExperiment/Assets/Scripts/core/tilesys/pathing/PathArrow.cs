@@ -205,19 +205,15 @@ namespace core.tilesys.pathing
                     AddStraight(true);
                     break;
                 case PathArrowTileEnum.TopToRight:
-                    Debug.Log("TopToRight");
                     AddElbow(SPRITE_TtR);
                     break;
                 case PathArrowTileEnum.TopToLeft:
-                    Debug.Log("TopToLeft");
                     AddElbow(SPRITE_TtL);
                     break;
                 case PathArrowTileEnum.BottomToRight:
-                    Debug.Log("BottomToRight");
                     AddElbow(SPRITE_BtR);
                     break;
                 case PathArrowTileEnum.BottomToLeft:
-                    Debug.Log("BottomToLeft");
                     AddElbow(SPRITE_BtL);
                     break;
                 case PathArrowTileEnum.EndArrowUp:
