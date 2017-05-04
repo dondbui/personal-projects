@@ -85,33 +85,8 @@ namespace core.tilesys.pathing
         public void Update(Vector2 startPos, Vector2 endPos)
         {
             Clear();
-
-            int xDelta = Mathf.RoundToInt(endPos.x - startPos.x);
-            int yDelta = Mathf.RoundToInt(endPos.y - startPos.y);
-
-            if (xDelta == 0 && yDelta == 0)
-            {
-                return;
-            }
-
-            int xIncre = xDelta > 0 ? 1 : -1;
-            int yIncre = yDelta > 0 ? 1 : -1;
-
-            int x = (int)startPos.x;
-            int y = (int)startPos.y;
             
-            // draw the vertical
-            int end = Math.Abs(yDelta);
-            for (int i = 0; i < end; i++)
-            {
-                AddTile(x, y + i * yIncre, false, true);
-            }
-
-            end = Math.Abs(xDelta);
-            for (int i = 0; i <= end; i++)
-            {
-                AddTile(x + i * xIncre, y + yDelta, false, false);
-            }
+            CalculatePath(startPos, endPos);
 
             CreateUVCoordinates();
 
@@ -120,6 +95,30 @@ namespace core.tilesys.pathing
 
             meshFilter.mesh = arrowMesh;
             meshFilter.mesh.uv = uvArray.ToArray();
+        }
+
+        private void CalculatePath(Vector2 startPos, Vector2 endPos)
+        {
+            int xDelta = Mathf.RoundToInt(endPos.x - startPos.x);
+            int yDelta = Mathf.RoundToInt(endPos.y - startPos.y);
+
+            if (xDelta == 0 && yDelta == 0)
+            {
+                return;
+            }
+
+            PathingController pc = MapController.GetInstance().pathingController;
+
+            List<PathGraphNode> path = pc.search.Calculate(startPos, endPos);
+            for (int i = path.Count - 1; i >= 0; i--)
+            {
+                PathGraphNode node = path[i];
+
+                if (node != null)
+                {
+                    AddTile(node.x, node.y, false, false);
+                }
+            }
         }
 
         public void Clear()

@@ -1,12 +1,13 @@
-﻿
-
-using System.Collections.Generic;
-/// ---------------------------------------------------------------------------
+﻿/// ---------------------------------------------------------------------------
 /// BreadthFirstSearch.cs
 /// 
 /// <author>Don Duy Bui</author>
 /// <date>May 1st, 2017</date>
 /// ---------------------------------------------------------------------------
+
+using core.debug;
+using core.tilesys.vision;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace core.tilesys.pathing
@@ -36,13 +37,13 @@ namespace core.tilesys.pathing
         {
         }
 
-        public void Calculate()
+        public List<PathGraphNode> Calculate(Vector2 start, Vector2 end)
         {
-            int startX = 15;
-            int startY = 15;
+            int startX = Mathf.RoundToInt(start.x);
+            int startY = Mathf.RoundToInt(start.y);
 
-            int endX = 15;
-            int endY = 20;
+            int endX = Mathf.RoundToInt(end.x);
+            int endY = Mathf.RoundToInt(end.y);
 
             visitedNodes = new PathGraphNode[32, 32];
 
@@ -73,8 +74,11 @@ namespace core.tilesys.pathing
 
                     if (visitedNodes[x, y] == null)
                     {
-                        queue.Enqueue(adjacent);
-
+                        // Only if it's passable do we care to continue with that node
+                        if (IsNodePathable(adjacent))
+                        {
+                            queue.Enqueue(adjacent);
+                        }
                         visitedNodes[x, y] = node;
                     }
                 }
@@ -92,7 +96,6 @@ namespace core.tilesys.pathing
             List<PathGraphNode> path = new List<PathGraphNode>();
 
             PathGraphNode currNode = graph[endX, endY];
-
             path.Add(currNode);
 
             // Back trace the steps back to the starting position
@@ -107,13 +110,23 @@ namespace core.tilesys.pathing
             }
 
             // Print out the path to the starting point. 
-            for (int i = 0, pathLength = path.Count; i < pathLength; i++)
-            {
-                PathGraphNode step = path[i];
+            //for (int i = 0, pathLength = path.Count; i < pathLength; i++)
+            //{
+            //    PathGraphNode step = path[i];
 
-                Debug.Log("Path Step " + i + " : " + step.x + ", " + step.y);
-            }
+            //    Debug.Log("Path Step " + i + " : " + step.x + ", " + step.y);
+            //    MapController.GetInstance().pathingController.DrawMarkOnTile(step.x, step.y, Color.yellow);
+            //}
 
+            return path;
+        }
+
+        private bool IsNodePathable(PathGraphNode node)
+        {
+            bool isOccupied = MapController.GetInstance().IsTileOccupied(node.x, node.y);
+            bool isVisible = VisionController.GetInstance().isTileVisible(node.x, node.y);
+
+            return !isOccupied /*&& isVisible*/;
         }
 
         public void GenerateMapGraph(MapData map)

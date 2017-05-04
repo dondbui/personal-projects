@@ -17,11 +17,13 @@ namespace core.tilesys.pathing
     /// </summary>
     public class PathingController
     {
-        private const float DURATION = 2f;
+        private const float DURATION = 10f;
 
         private PathArrow arrow;
 
         public BreadthFirstSearch search;
+
+        private Vector2 lastTilePos = new Vector2();
 
         public PathingController()
         {
@@ -38,7 +40,20 @@ namespace core.tilesys.pathing
 
                 Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(mousePos);
 
-                PlotPath(selectedUnit, tilePos);
+                int x = Mathf.RoundToInt(tilePos.x);
+                int y = Mathf.RoundToInt(tilePos.y);
+
+                int lastX = Mathf.RoundToInt(lastTilePos.x);
+                int lastY = Mathf.RoundToInt(lastTilePos.y);
+
+                // If there's a delta then plat the path.
+                if (x != lastX || y != lastY)
+                {
+                    lastTilePos = tilePos;
+
+                    Debug.Log("replotting: " + x + "," + y + " | " + lastX + ", " + lastY);
+                    PlotPath(selectedUnit, tilePos);
+                }
             }
         }
 
@@ -82,17 +97,17 @@ namespace core.tilesys.pathing
 
             /// make the \
             startPos.x = x;
-            startPos.y = -y;
+            startPos.y = y;
             endPos.x = x + 1f;
-            endPos.y = -y - 1f;
+            endPos.y = y + 1f;
 
             Debug.DrawLine(startPos, endPos, color, DURATION, false);
 
             // make the /
             startPos.x = x + 1f;
-            startPos.y = -y;
+            startPos.y = y;
             endPos.x = x;
-            endPos.y = -y - 1f;
+            endPos.y = y + 1f;
 
             Debug.DrawLine(startPos, endPos, color, DURATION, false);
         }
