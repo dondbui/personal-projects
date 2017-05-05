@@ -51,7 +51,7 @@ namespace core.tilesys.pathing
                 {
                     lastTilePos = tilePos;
 
-                    Debug.Log("replotting: " + x + "," + y + " | " + lastX + ", " + lastY);
+                    //Debug.Log("replotting: " + x + "," + y + " | " + lastX + ", " + lastY);
                     PlotPath(selectedUnit, tilePos);
                 }
             }

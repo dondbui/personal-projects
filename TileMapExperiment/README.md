@@ -8,7 +8,7 @@ This project is for my own personal experimentation with tilemap systems using U
 - Method to determine what unit occupies a given tile
 - Automatically update occupied map based on unit position and movement
 - Pathing arrow when selecting unit movement destination
-![Pathing Arrow](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/pathing_arrow_04.gif)
+![Pathing Arrow](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/pathing_arrow_05.gif)
 
 ### Animation System
 - Basic lerp animation for units

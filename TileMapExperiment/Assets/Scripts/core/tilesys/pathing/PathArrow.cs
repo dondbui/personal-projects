@@ -444,7 +444,7 @@ namespace core.tilesys.pathing
                 if (curr.x > prev.x)
                 {
                     // It's turned upward
-                    if (next.y < curr.y)
+                    if (next.y > curr.y)
                     {
                         return PathArrowTileEnum.BottomToLeft;
                     }
@@ -453,7 +453,7 @@ namespace core.tilesys.pathing
                 }
                 // Assume it's going to the left
                 // It's turned upward
-                if (next.y < curr.y)
+                if (next.y > curr.y)
                 {
                     return PathArrowTileEnum.BottomToRight;
                 }
