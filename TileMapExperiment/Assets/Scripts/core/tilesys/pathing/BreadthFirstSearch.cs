@@ -39,6 +39,8 @@ namespace core.tilesys.pathing
 
         public List<PathGraphNode> Calculate(Vector2 start, Vector2 end)
         {
+            PathingController pc = MapController.GetInstance().pathingController;
+
             int startX = Mathf.RoundToInt(start.x);
             int startY = Mathf.RoundToInt(start.y);
 
@@ -74,7 +76,7 @@ namespace core.tilesys.pathing
                     if (visitedNodes[x, y] == null)
                     {
                         // Only if it's passable do we care to continue with that node
-                        if (IsNodePathable(adjacent))
+                        if (pc.IsNodePathable(adjacent))
                         {
                             queue.Enqueue(adjacent);
                         }
@@ -118,14 +120,6 @@ namespace core.tilesys.pathing
             //}
 
             return path;
-        }
-
-        private bool IsNodePathable(PathGraphNode node)
-        {
-            bool isOccupied = MapController.GetInstance().IsTileOccupied(node.x, node.y);
-            bool isVisible = VisionController.GetInstance().isTileVisible(node.x, node.y);
-
-            return !isOccupied && isVisible;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
 /// <date>April 13th, 2017</date>
 /// ---------------------------------------------------------------------------
 
+using core.tilesys.vision;
 using core.units;
 using System;
 using UnityEngine;
@@ -39,6 +40,11 @@ namespace core.tilesys.pathing
                 Vector3 mousePos = Input.mousePosition;
 
                 Vector2 tilePos = MapCoordinateUtils.GetTilePosFromClickPos(mousePos);
+
+                if (!IsTilePathable((int)tilePos.x, (int)tilePos.y))
+                {
+                    return;
+                }
 
                 int x = Mathf.RoundToInt(tilePos.x);
                 int y = Mathf.RoundToInt(tilePos.y);
@@ -85,6 +91,19 @@ namespace core.tilesys.pathing
 
             arrow.Clear();
             
+        }
+
+        public bool IsNodePathable(PathGraphNode node)
+        {
+            return IsTilePathable(node.x, node.y);
+        }
+
+        public bool IsTilePathable(int x, int y)
+        {
+            bool isOccupied = MapController.GetInstance().IsTileOccupied(x, y);
+            bool isVisible = VisionController.GetInstance().isTileVisible(x, y);
+
+            return !isOccupied && isVisible;
         }
 
         /// <summary>
