@@ -1,5 +1,6 @@
 ﻿
 using core.tilesys;
+using core.tilesys.pathing;
 using core.tilesys.vision;
 using core.units;
 /// ---------------------------------------------------------------------------
@@ -18,7 +19,7 @@ namespace core.anim
     /// </summary>
     public class AnimController
     {
-        private const float SPEED = 8.5f;
+        private const float SPEED = 16.5f;
 
         /// <summary>
         /// The highlander of this class. 
@@ -120,17 +121,59 @@ namespace core.anim
             }
         }
 
-        public void ForceMoveUnitToTile(GameObject unit, Vector2 tilePos)
+        public void ForceMoveUnitToTile(GameObject unit, Vector2 endTile)
         {
-            Vector2 endPos = MapCoordinateUtils.GetTileToWorldPosition(tilePos);
             GameUnitComponent guc = unit.GetComponent<GameUnitComponent>();
             guc.ClearPendingDestinations();
 
-            // Apply tile size off set.
-            endPos.x = endPos.x + guc.tileOffsetX;
-            endPos.y = endPos.y + guc.tileOffsetY;
+            // Get the path from the pathing controller
+            Vector2 startPos = guc.CurrentTilePos;
 
-            guc.QueueDestination(endPos);
+            PathingController pc = MapController.GetInstance().pathingController;
+
+            // Get the full path
+            List<PathGraphNode> path = pc.search.Calculate(startPos, endTile);
+
+            // get the directional changes from the path.
+            for (int i = path.Count - 1; i >= 0; i--)
+            {
+                PathGraphNode prev = null;
+                PathGraphNode next = null;
+                PathGraphNode curr = path[i];
+
+                // Always set the final one as a destination
+                if (i == 0)
+                {
+                    Vector2 endPos = MapCoordinateUtils.GetTileToWorldPosition(endTile);
+
+                    // Apply tile size off set.
+                    endPos.x = endPos.x + guc.tileOffsetX;
+                    endPos.y = endPos.y + guc.tileOffsetY;
+                    
+                    guc.QueueDestination(endPos);
+                    continue;
+                }
+
+                if (i < path.Count - 1)
+                {
+                    prev = path[i + 1];
+                }
+
+                if (i > 0)
+                {
+                    next = path[i - 1];
+                }
+
+                // Only if we have a turn do we need to add a destination.
+                if (pc.IsPathNodeATurn(prev, curr, next))
+                {
+                    Vector2 turn = MapCoordinateUtils.GetTileToWorldPosition(curr.x, curr.y);
+                    turn.x += guc.tileOffsetX;
+                    turn.y +=guc.tileOffsetY;
+
+                    guc.QueueDestination(turn);
+                }
+            }
 
             if (!animatingObjects.Contains(unit))
             {
@@ -154,6 +197,7 @@ namespace core.anim
                 animatingObjects.Add(unit);
             }
         }
+
     }
 }
 

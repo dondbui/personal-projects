@@ -88,6 +88,50 @@ namespace core.tilesys.pathing
         }
 
         /// <summary>
+        /// Given the current node and it's neighbors in the path list, is this node a turn?
+        /// 
+        /// This is very useful for queueing up the movement destinations.
+        /// </summary>
+        public bool IsPathNodeATurn(PathGraphNode prev, PathGraphNode curr, PathGraphNode next)
+        {
+            if (prev == null)
+            {
+                return false;
+            }
+
+            //Handle the vertical to horizontal transitions
+            if (curr.x == prev.x && // Make sure it's vertical
+                next.y == curr.y)   // Make sure it's horizontal
+            {
+                if (next.x != curr.x)
+                {
+                    return true;
+                }
+
+                if (prev.y != curr.y)
+                {
+                    return true;
+                }
+            }
+                // Handle the horizontal to vertical transitions
+            if (curr.y == prev.y &&
+                curr.x == next.x)
+            {
+                if (curr.y != next.y)
+                {
+                    return true;
+                }
+
+                if (prev.x != curr.x)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Draws an X over a given tile coordinate
         /// </summary>
         public void DrawMarkOnTile(int x, int y, Color color)

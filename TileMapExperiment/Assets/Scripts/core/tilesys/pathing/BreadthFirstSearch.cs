@@ -46,7 +46,7 @@ namespace core.tilesys.pathing
             int endY = Mathf.RoundToInt(end.y);
 
             visitedNodes = new PathGraphNode[32, 32];
-
+            
             Queue<PathGraphNode> queue = new Queue<PathGraphNode>();
 
             // add the starting node to the queue.
@@ -68,7 +68,6 @@ namespace core.tilesys.pathing
                     }
 
                     // Check if we've already seen it.
-
                     int x = adjacent.x;
                     int y = adjacent.y;
 
@@ -126,9 +125,13 @@ namespace core.tilesys.pathing
             bool isOccupied = MapController.GetInstance().IsTileOccupied(node.x, node.y);
             bool isVisible = VisionController.GetInstance().isTileVisible(node.x, node.y);
 
-            return !isOccupied /*&& isVisible*/;
+            return !isOccupied && isVisible;
         }
 
+        /// <summary>
+        /// Generates the graph of all the nodes. We should only need to do this once per level
+        /// </summary>
+        /// <param name="map"></param>
         public void GenerateMapGraph(MapData map)
         {
             int width = map.GetWidth();
@@ -162,8 +165,6 @@ namespace core.tilesys.pathing
                     }
                 }
             }
-
-            Debug.Log("Graph Node Made");
         }
     }
 }
