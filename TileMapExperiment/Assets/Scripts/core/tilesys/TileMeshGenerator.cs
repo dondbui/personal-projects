@@ -4,7 +4,8 @@
 /// <author>Don Duy Bui</author>
 /// <date>March 7th, 2017</date>
 /// ---------------------------------------------------------------------------
- 
+
+using core.assets;
 using UnityEngine;
 
 namespace core.tilesys
@@ -90,7 +91,7 @@ namespace core.tilesys
             mesh.triangles = triangles;
             meshFilter.mesh = mesh;
             
-            Material mat = Resources.Load<Material>("Materials/spacetiles");
+            Material mat = Resources.Load<Material>(AssetConstants.MAT_DEFAULT_MAP_TILES);
 
             MeshRenderer mr = mapMesh.AddComponent<MeshRenderer>();
             mr.material = mat;

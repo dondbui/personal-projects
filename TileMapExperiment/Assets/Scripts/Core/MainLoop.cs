@@ -43,7 +43,7 @@ public class MainLoop : MonoBehaviour
 
         PreloadAssets();
 
-        MapController.GetInstance().LoadMapData("MapData/spacemap1");
+        MapController.GetInstance().LoadMapData(AssetConstants.MAP_DEFAULT_MAP);
 
         zoomLevel = Camera.main.orthographicSize;
 
@@ -91,11 +91,11 @@ public class MainLoop : MonoBehaviour
         AssetManager assetManager = AssetManager.GetInstance();
 
         // Preload some assets.
-        assetManager.PreloadSpriteSheet("Textures/ShipAssets");
-        assetManager.PreloadSpriteSheet("Textures/selectionTile");
-        assetManager.PreloadSpriteSheet("Textures/boss1");
-        assetManager.PreloadSpriteSheet("Textures/asteroid");
-        assetManager.PreloadSpriteSheet("Textures/pathingArrows");
+        assetManager.PreloadSpriteSheet(AssetConstants.TEX_SHIPS);
+        assetManager.PreloadSpriteSheet(AssetConstants.TEX_SELECTION_TILE);
+        assetManager.PreloadSpriteSheet(AssetConstants.TEX_BOSS);
+        assetManager.PreloadSpriteSheet(AssetConstants.TEX_ASTEROID);
+        assetManager.PreloadSpriteSheet(AssetConstants.TEX_PATHING_ARROWS);
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public class MainLoop : MonoBehaviour
     {
         selectionTile = new GameObject();
         SpriteRenderer sr = selectionTile.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetManager.GetInstance().GetPreloadedSprite("selectionTile");
+        sr.sprite = AssetManager.GetInstance().GetPreloadedSprite(AssetConstants.SPR_SELECTION_TILE);
 
         selectionTile.name = "selectionTile";
 

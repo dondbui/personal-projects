@@ -84,6 +84,7 @@ namespace core.tilesys.pathing
                     }
                 }
 
+                // If we actually hit the end point then bounce out early for a bit of efficiency
                 if (node.x == endX && node.y == endY)
                 {
                     break;

@@ -5,7 +5,7 @@
 /// <date>April 13th, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using System;
+using core.assets;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -62,7 +62,7 @@ namespace core.tilesys.pathing
             arrowObj = new GameObject();
             meshFilter = arrowObj.AddComponent<MeshFilter>();
 
-            Material mat = Resources.Load<Material>("Materials/pathingArrows");
+            Material mat = Resources.Load<Material>(AssetConstants.MAT_PATHING_ARROWS);
             MeshRenderer mr = arrowObj.AddComponent<MeshRenderer>();
             mr.material = mat;
 

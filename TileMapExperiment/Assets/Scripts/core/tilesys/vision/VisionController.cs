@@ -5,6 +5,7 @@
 /// <date>March 23rd, 2017</date>
 /// ---------------------------------------------------------------------------
 
+using core.assets;
 using core.units;
 using System;
 using UnityEngine;
@@ -139,7 +140,7 @@ namespace core.tilesys.vision
             mesh.triangles = triangles;
             meshFilter.mesh = mesh;
 
-            Material mat = Resources.Load<Material>("Materials/occupied");
+            Material mat = Resources.Load<Material>(AssetConstants.MAT_SELECTED_TILE);
 
             MeshRenderer mr = mapMesh.AddComponent<MeshRenderer>();
             mr.material = mat;
@@ -158,10 +159,6 @@ namespace core.tilesys.vision
 
             // Top right of tile in atlas
             UVArray[3] = new Vector2(1, 0);
-
-            
-
-            
 
             meshFilter.mesh.uv = UVArray;
         }

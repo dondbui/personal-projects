@@ -5,8 +5,7 @@
 /// <date>March 15th, 2017</date>
 /// ---------------------------------------------------------------------------
 
-using System.Collections;
-using System.Collections.Generic;
+using core.assets;
 using UnityEngine;
 
 namespace core.tilesys
@@ -87,7 +86,7 @@ namespace core.tilesys
             mesh.triangles = triangles;
             meshFilter.mesh = mesh;
 
-            Material mat = Resources.Load<Material>("Materials/gridOverlay");
+            Material mat = Resources.Load<Material>(AssetConstants.MAT_GRID_OVERLAY);
 
             MeshRenderer mr = mapMesh.AddComponent<MeshRenderer>();
             mr.material = mat;
