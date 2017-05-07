@@ -195,9 +195,15 @@ public class MainLoop : MonoBehaviour
         }
         else
         {
+            PathingController pc = MapController.GetInstance().pathingController;
+
+            if (!pc.IsTilePathable((int)tilePos.x, (int)tilePos.y))
+            {
+                return;
+            }
+
             AnimController.GetInstance().ForceMoveUnitToTile(selectedUnit, tilePos);
-            //MapController.GetInstance().pathingController.PlotPath(selectedUnit, tilePos);
-            MapController.GetInstance().pathingController.ClearArrow();
+            pc.ClearArrow();
             us.Deselect();
         }
     }
