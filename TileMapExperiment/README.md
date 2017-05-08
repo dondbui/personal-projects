@@ -10,6 +10,12 @@ This project is for my own personal experimentation with tilemap systems using U
 - Pathing arrow when selecting unit movement destination
 ![Pathing Arrow](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/pathing_arrow_06.gif)
 
+### Pathfinding System
+- Breadth-first search support for most accurate but slowest pathing.
+- TODO: Limiting unit movement based on range
+- TODO: A* Search
+
+
 ### Animation System
 - Basic lerp animation for units
 - Unit destination queueing system
@@ -24,6 +30,7 @@ This project is for my own personal experimentation with tilemap systems using U
 - Recursive Shadow Casting Algorithm support for checking vision
 ![Recursive Shadow Casting](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/recursive-shadow-casting.png)
 
+- Option to refresh vision smoothly as unit moves or wait to update vision upon arriving at destination
 - Optional debugging option to see rays cast or tiles lit
 
 ##### Sources:
