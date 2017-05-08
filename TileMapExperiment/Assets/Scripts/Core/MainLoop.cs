@@ -50,7 +50,7 @@ public class MainLoop : MonoBehaviour
         Debug.Log("ZOOM LEVEL: " + zoomLevel);
 
         // Create the selection tile
-        CreateSelectionTile();
+        UnitSelector.GetInstance().InitializeSelectionTile();
 
         TestController.GetInstance().RunTests();
 
@@ -206,19 +206,5 @@ public class MainLoop : MonoBehaviour
             pc.ClearArrow();
             us.Deselect();
         }
-    }
-
-    private void CreateSelectionTile()
-    {
-        selectionTile = new GameObject();
-        SpriteRenderer sr = selectionTile.AddComponent<SpriteRenderer>();
-        sr.sprite = AssetManager.GetInstance().GetPreloadedSprite(AssetConstants.SPR_SELECTION_TILE);
-
-        selectionTile.name = "selectionTile";
-
-        selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
-        selectionTile.SetActive(false);
-
-        UnitSelector.GetInstance().SetSelectionTileGameObject(selectionTile);
     }
 }

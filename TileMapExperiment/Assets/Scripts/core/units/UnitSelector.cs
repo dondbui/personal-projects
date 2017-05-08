@@ -6,12 +6,15 @@
 /// <date>March 30th, 2017</date>
 /// ---------------------------------------------------------------------------
 
+using core.assets;
 using core.tilesys;
 using core.units;
 using UnityEngine;
 
 public class UnitSelector
 {
+    public const string SELECTION_TILE_NAME = "selectionTile";
+
     private static UnitSelector instance;
 
     private GameObject currSelectedUnit;
@@ -40,9 +43,16 @@ public class UnitSelector
         return instance;
     }
 
-    public void SetSelectionTileGameObject(GameObject gameObject)
+    public void InitializeSelectionTile()
     {
-        selectionTile = gameObject;
+        selectionTile = new GameObject();
+        SpriteRenderer sr = selectionTile.AddComponent<SpriteRenderer>();
+        sr.sprite = AssetManager.GetInstance().GetPreloadedSprite(AssetConstants.SPR_SELECTION_TILE);
+
+        selectionTile.name = SELECTION_TILE_NAME;
+
+        selectionTile.transform.position = new Vector3(0.5f, -0.5f, 0);
+        selectionTile.SetActive(false);
     }
 
     public GameObject GetCurrentlySelectedUnit()
