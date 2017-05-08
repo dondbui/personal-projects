@@ -22,6 +22,12 @@ namespace core.anim
         private const float SPEED = 16.5f;
 
         /// <summary>
+        /// Determines if we should allow vision to refresh each frame or
+        /// once the unit arrives at it's destination.
+        /// </summary>
+        private bool REFRESH_VISION_EACH_FRAME = false;
+
+        /// <summary>
         /// The highlander of this class. 
         /// </summary>
         private static AnimController instance;
@@ -117,7 +123,13 @@ namespace core.anim
 
             if (isVisionDirty)
             {
-                VisionController.GetInstance().UpdateVisionTiles();
+                // If we want to refresh each frame while dirty then update
+                //
+                // otherwise only refresh the vision map once we're done animating
+                if (REFRESH_VISION_EACH_FRAME || animatingObjects.Count == 0)
+                {
+                    VisionController.GetInstance().UpdateVisionTiles();
+                }
             }
         }
 

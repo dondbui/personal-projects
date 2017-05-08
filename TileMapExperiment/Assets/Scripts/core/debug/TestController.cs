@@ -42,7 +42,7 @@ namespace core.debug
         {
             PlacePlayerUnits();
 
-            //RandomlyPlaceEnemies();
+            RandomlyPlaceEnemies();
             RandomlyPlaceAsteroids();
 
             VisionController.GetInstance().UpdateVisionTiles();
