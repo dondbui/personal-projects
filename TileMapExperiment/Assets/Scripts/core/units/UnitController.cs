@@ -164,12 +164,22 @@ namespace core.units
 
         public List<GameObject> GetAllPlayerUnits()
         {
+            return GetAllUnitsOfType(UnitType.PLAYER);
+        }
+
+        public List<GameObject> GetAllEnemyUnits()
+        {
+            return GetAllUnitsOfType(UnitType.ENEMY);
+        }
+
+        private List<GameObject> GetAllUnitsOfType(UnitType type)
+        {
             List<GameObject> units = new List<GameObject>();
 
             foreach (KeyValuePair<string, GameObject> entry in unitMap)
             {
                 GameUnitComponent guc = entry.Value.GetComponent<GameUnitComponent>();
-                if (guc.type == UnitType.PLAYER)
+                if (guc.type == type)
                 {
                     units.Add(entry.Value);
                 }
