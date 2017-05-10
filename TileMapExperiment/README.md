@@ -10,6 +10,11 @@ This project is for my own personal experimentation with tilemap systems using U
 - Pathing arrow when selecting unit movement destination
 ![Pathing Arrow](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/pathing_arrow_06.gif)
 
+### Beacon System
+- Enemy units hidden in the void now appear as warning beacons
+![Beacon](https://github.com/dondbui/personal-projects/raw/master/TileMapExperiment/Screenshots/beacons_01.gif)
+- TODO: Limit the range of the beacon scanner. Currently it checks all enemy units
+
 ### Pathfinding System
 - Breadth-first search support for most accurate but slowest pathing.
 - TODO: Limiting unit movement based on range
