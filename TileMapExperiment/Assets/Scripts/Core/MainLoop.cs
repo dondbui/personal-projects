@@ -9,6 +9,7 @@ using core.anim;
 using core.assets;
 using core.debug;
 using core.tilesys;
+using core.tilesys.beacon;
 using core.tilesys.pathing;
 using core.units;
 using System;
@@ -96,6 +97,9 @@ public class MainLoop : MonoBehaviour
         assetManager.PreloadSpriteSheet(AssetConstants.TEX_BOSS);
         assetManager.PreloadSpriteSheet(AssetConstants.TEX_ASTEROID);
         assetManager.PreloadSpriteSheet(AssetConstants.TEX_PATHING_ARROWS);
+        assetManager.PreloadPrefab(AssetConstants.PF_BEACON);
+
+        BeaconController.GetInstance().PopulatePool();
     }
 
     /// <summary>

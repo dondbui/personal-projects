@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.assets;
+using core.tilesys.beacon;
 using core.units;
 using System;
 using UnityEngine;
@@ -45,6 +46,7 @@ namespace core.tilesys.vision
         public void UpdateVisionTiles()
         {
             UpdateVisionTiles(false);
+            BeaconController.GetInstance().RefreshBeacons();
         }
 
         public void UpdateVisionTiles(bool drawDebugLines)

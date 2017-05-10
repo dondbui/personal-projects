@@ -38,6 +38,11 @@ namespace core.assets
         public const string MAT_DEFAULT_MAP_TILES = "Materials/spacetiles";
 
         /// <summary>
+        /// The prefab for the enemy in the void beacon
+        /// </summary>
+        public const string PF_BEACON = "Prefabs/Beacon";
+
+        /// <summary>
         /// The sprite for the red seleciton tile. 
         /// </summary>
         public const string SPR_SELECTION_TILE = "selectionTile";

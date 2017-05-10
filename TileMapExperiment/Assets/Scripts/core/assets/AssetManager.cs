@@ -23,9 +23,15 @@ namespace core.assets
         /// The dictionary containing all of the preloaded sprites. 
         private Dictionary<string, Sprite> spriteDirectory;
 
+        /// <summary>
+        /// The dictionary of prefabs
+        /// </summary>
+        private Dictionary<string, GameObject> prefabDirectory;
+
         private AssetManager()
         {
             spriteDirectory = new Dictionary<string, Sprite>();
+            prefabDirectory = new Dictionary<string, GameObject>();
         }
 
         public static AssetManager GetInstance()
@@ -53,6 +59,20 @@ namespace core.assets
             }
 
             return spriteDirectory[spriteName];
+        }
+
+        public GameObject InstantiatePreloadedPrefab(string prefabPath)
+        {
+            GameObject gameObj = prefabDirectory[prefabPath];
+
+            return GameObject.Instantiate(gameObj);
+        }
+
+        public void PreloadPrefab(string prefabPath)
+        {
+            GameObject gameObj = Resources.Load<GameObject>(prefabPath);
+
+            prefabDirectory[prefabPath] = gameObj;
         }
 
         /// <summary>

@@ -6,6 +6,7 @@
 /// ---------------------------------------------------------------------------
 
 using core.tilesys;
+using core.tilesys.beacon;
 using core.tilesys.vision;
 using core.units;
 using UnityEngine;
