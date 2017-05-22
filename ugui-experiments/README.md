@@ -1,10 +1,12 @@
 # TileMapExperiment
 This project is for my own personal experimentation with Unity's GUI systems
 
+![Splash](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/splash01.gif)
+
 ### What Works:
 - Splash Screen transition to Loading Screen
 - Force point filter on text to maintain the crisp pixel font
-
+- Triggering of the fade animation 
 
 ## Sources:
 
