@@ -11,15 +11,55 @@ namespace core.ui.screens
         private Button newGameBtn;
         private Button continueBtn;
 
+        private Animator anim;
+
+        private bool isActive = true;
+
         public void Start()
         {
-            newGameBtn = GetButtonByName(transform, BTN_NEWGAME);
-            continueBtn = GetButtonByName(transform, BTN_CONTINUE);
+            anim = GetComponent<Animator>();
+
+            newGameBtn = UIUtils.GetButtonByName(this.gameObject, BTN_NEWGAME);
+            continueBtn = UIUtils.GetButtonByName(this.gameObject, BTN_CONTINUE);
 
             UIInputController uic = UIInputController.GetInstance();
 
             uic.RegisterOnClick(newGameBtn, OnNewGameClicked);
             uic.RegisterOnClick(continueBtn, OnContinueClicked);
+
+
+            AnimationClip clip;
+
+            // get the animation clip and add the AnimationEvent
+            clip = anim.runtimeAnimatorController.animationClips[0];
+
+            if (clip.name == "ContinueSelectedAnim")
+            {
+                // new event created
+                AnimationEvent evt;
+                evt = new AnimationEvent();
+                evt.stringParameter = "Continue";
+                evt.time = 0.9f;
+                evt.functionName = "OnFadeoutComplete";
+                clip.AddEvent(evt);
+            }
+        }
+
+        public void OnDestroy()
+        {
+            // Unregister button listeners
+            UIInputController uic = UIInputController.GetInstance();
+
+            uic.UnregisterOnClick(newGameBtn, OnNewGameClicked);
+            uic.UnregisterOnClick(continueBtn, OnContinueClicked);
+        }
+
+        public void Update()
+        {
+            if (!isActive && Input.GetKey(KeyCode.Escape))
+            {
+                anim.SetTrigger("returnToTitle");
+            }
         }
 
         private void OnNewGameClicked(Button button)
@@ -30,24 +70,26 @@ namespace core.ui.screens
         private void OnContinueClicked(Button button)
         {
             Debug.Log("Handle Continue Button");
+            anim.SetTrigger("continue");
         }
 
-        private Button GetButtonByName(Transform transform, string name)
+        public void OnFadeoutComplete()
         {
-            // Try to the find the child transform by name
-            Transform btnTransform = transform.Find(name);
+            isActive = false;
 
-            // If we couldn't find it then it'll be null
-            if (btnTransform == null)
-            {
-                return null;
-            }
+            Debug.Log("Handle Anim Complete");
 
-            // Now we can safely get the gameobject off of the found tranform
-            GameObject btnObj = btnTransform.gameObject;
+            // Show the load file screen
+            GameObject resourceObj = Resources.Load<GameObject>("Prefabs/LoadFileScreen");
 
-            // Return the button component
-            return btnObj.GetComponent<Button>();
+            GameObject screen = GameObject.Instantiate(resourceObj);
+            screen.name = "LoadFileScreen";
+
+            // Add it to the title game object
+            GameObject MainMenu = GameObject.Find("MainMenu");
+
+            screen.transform.SetParent(MainMenu.transform, false);
         }
+
     }
 }

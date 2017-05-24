@@ -17,7 +17,6 @@ namespace core.ui.screens
         private void GoToMainScene()
         {
             Debug.Log("Opening Main Scene");
-            //SceneManager.LoadScene("MainScene");
 
             Animator splashAnim = this.gameObject.GetComponent<Animator>();
 
@@ -26,7 +25,7 @@ namespace core.ui.screens
 
         public void OnAnimComplete()
         {
-            SceneManager.LoadScene("MainScene");
+            SceneManager.LoadScene("TitleScene");
         }
     }
 

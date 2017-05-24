@@ -9,15 +9,16 @@ namespace core.ui
     /// </summary>
     public class ButtonComponent : MonoBehaviour
     {
-        private Button button;
+        protected Button button;
 
 
-        void Start()
+        public virtual void Start()
         {
             button = this.gameObject.GetComponent<Button>();
+            button.onClick.AddListener(OnClicked);
         }
 
-        public void OnClicked()
+        public virtual void OnClicked()
         {
             UIInputController.GetInstance().ButtonClicked(button);
         }

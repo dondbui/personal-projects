@@ -7,6 +7,11 @@ This project is for my own personal experimentation with Unity's GUI systems
 - Splash Screen transition to Loading Screen
 - Force point filter on text to maintain the crisp pixel font
 - Triggering of the fade animation 
+- Transitions between title screen and load file screen
+
+![Load File Screen](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/titleScreen01.gif)
+
+- Going back with the escape button
 
 ## Sources:
 
