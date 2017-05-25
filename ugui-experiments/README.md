@@ -9,7 +9,7 @@ This project is for my own personal experimentation with Unity's GUI systems
 - Triggering of the fade animation 
 - Transitions between title screen and load file screen
 
-![Load File Screen](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/titleScreen01.gif)
+![Load File Screen](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/titleScreen02.gif)
 
 - Going back with the escape button
 
