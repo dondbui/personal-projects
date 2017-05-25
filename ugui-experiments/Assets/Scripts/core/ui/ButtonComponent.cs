@@ -18,7 +18,7 @@ namespace core.ui
             button.onClick.AddListener(OnClicked);
         }
 
-        public virtual void OnClicked()
+        protected virtual void OnClicked()
         {
             UIInputController.GetInstance().ButtonClicked(button);
         }

@@ -32,14 +32,13 @@ namespace core.ui.screens
 
             // get the animation clip and add the AnimationEvent
             clip = anim.runtimeAnimatorController.animationClips[0];
-
             if (clip.name == "ContinueSelectedAnim")
             {
                 // new event created
                 AnimationEvent evt;
                 evt = new AnimationEvent();
                 evt.stringParameter = "Continue";
-                evt.time = 0.9f;
+                evt.time = clip.length;
                 evt.functionName = "OnFadeoutComplete";
                 clip.AddEvent(evt);
             }
