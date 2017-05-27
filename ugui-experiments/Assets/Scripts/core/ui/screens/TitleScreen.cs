@@ -117,16 +117,10 @@ namespace core.ui.screens
             isActive = false;
             Debug.Log("Handle Anim Complete");
 
-            // Show the load file screen
-            GameObject resourceObj = Resources.Load<GameObject>("Prefabs/LoadFileScreen");
-
-            GameObject screen = GameObject.Instantiate(resourceObj);
-            screen.name = "LoadFileScreen";
-
             // Add it to the title game object
             GameObject MainMenu = GameObject.Find("MainMenu");
 
-            screen.transform.SetParent(MainMenu.transform, false);
+            UIFactory.CreateScreen(UIFactory.SCR_LOAD_FILE, MainMenu);
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ namespace core.ui
     /// </summary>
     public class ButtonComponent : MonoBehaviour
     {
-        protected Button button;
+        public Button button;
 
 
         public virtual void Start()

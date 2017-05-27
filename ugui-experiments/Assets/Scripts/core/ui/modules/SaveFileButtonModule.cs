@@ -65,7 +65,10 @@ namespace core.ui.modules
         protected override void OnClicked()
         {
             Debug.Log("Save File Button Clicked");
+
             base.OnClicked();
+            GameObject MainMenu = GameObject.Find("MainMenu");
+            UIFactory.CreateScreen(UIFactory.SCR_CONFIRM, MainMenu);
         }
 
         private void SetEmptySlot()
