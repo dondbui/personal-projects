@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using core.ui;
+using UnityEngine;
 
 namespace core
 {
@@ -46,6 +47,12 @@ namespace core
         private void HandleEscape()
         {
             Debug.Log("Escape Key Pressed");
+
+            ScreenQueueManager sqm = ScreenQueueManager.GetInstance();
+            if (sqm.CanCloseScreen())
+            {
+                sqm.CloseCurrentScreen();
+            }
         }
     }
 }

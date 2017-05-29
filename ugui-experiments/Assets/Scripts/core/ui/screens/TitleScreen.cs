@@ -20,6 +20,8 @@ namespace core.ui.screens
 
         public void Start()
         {
+            ScreenQueueManager.GetInstance().ShowScreenNow(this.gameObject);
+
             anim = GetComponent<Animator>();
 
             newGameBtn = UIUtils.GetButtonByName(this.gameObject, BTN_NEWGAME);
@@ -69,9 +71,10 @@ namespace core.ui.screens
             uic.UnregisterOnClick(continueBtn, OnContinueClicked);
         }
 
-        public void Update()
+        private void OnEnable()
         {
-            if (!isActive && Input.GetKeyDown(KeyCode.Escape))
+            // Upon re-enabling reset the animation triggers
+            if (anim != null)
             {
                 anim.ResetTrigger(TRG_CONTINUE);
                 anim.ResetTrigger(TRG_RETURN_TO_TITLE);
@@ -120,7 +123,12 @@ namespace core.ui.screens
             // Add it to the title game object
             GameObject MainMenu = GameObject.Find("MainMenu");
 
-            UIFactory.CreateScreen(UIFactory.SCR_LOAD_FILE, MainMenu);
+            GameObject loadFileScreen = UIFactory.CreateScreen(UIFactory.SCR_LOAD_FILE, MainMenu);
+
+            ScreenQueueManager sqm = ScreenQueueManager.GetInstance();
+
+            sqm.ShowScreenNow(loadFileScreen);
+            sqm.QueueScreenAsNext(this.gameObject);
         }
 
         /// <summary>

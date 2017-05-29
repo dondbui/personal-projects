@@ -37,12 +37,9 @@ namespace core.ui.screens
             }
         }
 
-        public void Update()
+        public void OnDestroy()
         {
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                Close();
-            }
+            ScreenQueueManager.GetInstance().ShowNextScreen();
         }
 
         public void Close()

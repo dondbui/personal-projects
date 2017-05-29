@@ -8,7 +8,7 @@ namespace core.ui
         private static ScreenQueueManager instance;
 
         /// <summary>
-        /// The linkedlsit of screens to be displayed. 
+        /// The linkedlist of screens to be displayed. 
         /// We don't use a queue because we want to be able to inject screens
         /// at varying points in the list.
         /// </summary>
@@ -29,6 +29,32 @@ namespace core.ui
             }
 
             return instance;
+        }
+
+        public bool CanCloseScreen()
+        {
+            if (CurrentScreen == null)
+            {
+                return false;
+            }
+
+            if (screenStack.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void CloseCurrentScreen()
+        {
+            if (!CanCloseScreen())
+            {
+                Debug.LogError("No CurrentScreen to close!!");
+                return;
+            }
+
+            GameObject.Destroy(CurrentScreen);
         }
 
         public void QueueScreen(GameObject screen)
@@ -55,6 +81,8 @@ namespace core.ui
 
         public void ShowNextScreen()
         {
+            CurrentScreen = null;
+
             if (screenStack.Count == 0)
             {
                 Debug.Log("All outta screens bub");
@@ -66,7 +94,15 @@ namespace core.ui
 
             screen.SetActive(true);
 
+            CurrentScreen = screen;
+
             Debug.Log("Now showing Screen: " + screen.name);
+        }
+
+        public void ShowScreenNow(GameObject screen)
+        {
+            screen.SetActive(true);
+            CurrentScreen = screen;
         }
     }
 }

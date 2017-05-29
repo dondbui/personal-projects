@@ -65,20 +65,17 @@ namespace core.ui.screens
             CloseScreen();
         }
 
-        private void CloseScreen()
+        private void OnDestroy()
         {
             btnYes.onClick.RemoveAllListeners();
             btnNo.onClick.RemoveAllListeners();
 
             ScreenQueueManager.GetInstance().ShowNextScreen();
-
-            Destroy(this.gameObject);
         }
 
-        // Update is called once per frame
-        public void Update()
+        private void CloseScreen()
         {
-
+            Destroy(this.gameObject);
         }
     }
 }
