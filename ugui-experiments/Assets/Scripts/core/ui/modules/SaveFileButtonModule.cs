@@ -76,7 +76,8 @@ namespace core.ui.modules
             ConfirmScreen screenComp = 
                 UIFactory.CreateScreenAndAddComponent<ConfirmScreen>(UIFactory.SCR_CONFIRM, MainMenu);
 
-            parentScreen.SetActive(false);
+            //parentScreen.SetActive(false);
+            ScreenQueueManager.GetInstance().QueueScreenAsNext(parentScreen);
 
             screenComp.SetData("Load this file?", "Are you sure you want to load this file?", OnYes, OnNo);
         }
@@ -85,11 +86,12 @@ namespace core.ui.modules
         {
             LoadFileScreen screenComp = parentScreen.GetComponent<LoadFileScreen>();
             screenComp.Close();
+
+            ScreenQueueManager.GetInstance().ClearQueueAndDestroyAllScreens();
         }
 
         private void OnNo()
         {
-            parentScreen.SetActive(true);
         }
 
         private void SetEmptySlot()

@@ -71,7 +71,7 @@ namespace core.ui.screens
 
         public void Update()
         {
-            if (!isActive && Input.GetKey(KeyCode.Escape))
+            if (!isActive && Input.GetKeyDown(KeyCode.Escape))
             {
                 anim.ResetTrigger(TRG_CONTINUE);
                 anim.ResetTrigger(TRG_RETURN_TO_TITLE);

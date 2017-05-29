@@ -70,6 +70,8 @@ namespace core.ui.screens
             btnYes.onClick.RemoveAllListeners();
             btnNo.onClick.RemoveAllListeners();
 
+            ScreenQueueManager.GetInstance().ShowNextScreen();
+
             Destroy(this.gameObject);
         }
 
