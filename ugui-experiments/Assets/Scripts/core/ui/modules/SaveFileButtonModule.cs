@@ -1,4 +1,5 @@
 ﻿
+using core.ui.screens;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,8 @@ namespace core.ui.modules
         private int slotNum;
         private string playerName;
 
+        private GameObject parentScreen;
+
         /// <summary>
         /// Sets the data prior to the monobehavior hitting start
         /// </summary>
@@ -40,6 +43,8 @@ namespace core.ui.modules
         public override void Start()
         {
             base.Start();
+
+            parentScreen = GameObject.Find(UIFactory.SCR_LOAD_FILE);
 
             lastSaveText = UIUtils.GetComponentFromGameObjectName<Text>(gameObject, TXT_LAST_SAVE_DATE);
             playDurText = UIUtils.GetComponentFromGameObjectName<Text>(gameObject, TXT_PLAY_DURATION);
@@ -68,7 +73,23 @@ namespace core.ui.modules
 
             base.OnClicked();
             GameObject MainMenu = GameObject.Find("MainMenu");
-            UIFactory.CreateScreen(UIFactory.SCR_CONFIRM, MainMenu);
+            ConfirmScreen screenComp = 
+                UIFactory.CreateScreenAndAddComponent<ConfirmScreen>(UIFactory.SCR_CONFIRM, MainMenu);
+
+            parentScreen.SetActive(false);
+
+            screenComp.SetData("Load this file?", "Are you sure you want to load this file?", OnYes, OnNo);
+        }
+
+        private void OnYes()
+        {
+            LoadFileScreen screenComp = parentScreen.GetComponent<LoadFileScreen>();
+            screenComp.Close();
+        }
+
+        private void OnNo()
+        {
+            parentScreen.SetActive(true);
         }
 
         private void SetEmptySlot()

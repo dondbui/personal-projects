@@ -41,10 +41,15 @@ namespace core.ui.screens
         {
             if (Input.GetKey(KeyCode.Escape))
             {
-                Debug.Log("Destroy LoadFileScreen");
-
-                Destroy(this.gameObject);
+                Close();
             }
+        }
+
+        public void Close()
+        {
+            Debug.Log("Destroy LoadFileScreen");
+
+            Destroy(this.gameObject);
         }
 
         private GameObject GetNewSaveFileButton(

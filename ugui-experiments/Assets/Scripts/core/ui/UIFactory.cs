@@ -9,24 +9,36 @@ namespace core.ui
     /// </summary>
     public class UIFactory
     {
+        public const string PREFAB_SCREEN_PATH = "Prefabs/Screens/";
+
         /// <summary>
         /// The prefab for the load file screen where the user can load their
         /// last saved game. 
         /// </summary>
-        public const string SCR_LOAD_FILE = "Prefabs/LoadFileScreen";
-        public const string SCR_CONFIRM = "Prefabs/Screens/ConfirmScreen";
+        public const string SCR_LOAD_FILE = "LoadFileScreen";
+        public const string SCR_CONFIRM = "ConfirmScreen";
+
+        public static T CreateScreenAndAddComponent<T>(string screenName, GameObject parent) where T: MonoBehaviour
+        {
+            GameObject screen = CreateScreen(screenName, parent);
+
+            T component = null;
+            if (screen != null)
+            {
+                component = screen.AddComponent<T>();
+            }
+
+            return component;
+        }
 
         public static GameObject CreateScreen(string screenName, GameObject parent)
         {
             // Show the load file screen
-            GameObject resourceObj = Resources.Load<GameObject>(screenName);
+            GameObject resourceObj = Resources.Load<GameObject>(PREFAB_SCREEN_PATH + screenName);
 
             GameObject screen = GameObject.Instantiate(resourceObj);
 
-            string[] pathPieces = screenName.Split('/');
-
-
-            screen.name = pathPieces[pathPieces.Length - 1];
+            screen.name = screenName;
 
             if (parent != null)
             {
