@@ -8,8 +8,10 @@ This project is for my own personal experimentation with Unity's GUI systems
 - Force point filter on text to maintain the crisp pixel font
 - Triggering of the fade animation 
 - Transitions between title screen and load file screen
+- Basic load file screen
+- Generic Re-usable confirmation screen that takes in yes and no callbacks
 
-![Load File Screen](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/titleScreen02.gif)
+![Load File Screen](https://github.com/dondbui/personal-projects/raw/master/ugui-experiments/Screenshots/titleScreen03.gif)
 
 - Going back with the escape button
 
