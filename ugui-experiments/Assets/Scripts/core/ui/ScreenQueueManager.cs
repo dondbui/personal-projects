@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using core.ui.screens;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace core.ui
@@ -38,12 +39,14 @@ namespace core.ui
                 return false;
             }
 
-            if (screenStack.Count == 0)
+            BaseScreenComponent baseScreen = CurrentScreen.GetComponent<BaseScreenComponent>();
+
+            if (baseScreen == null)
             {
                 return false;
             }
 
-            return true;
+            return baseScreen.isCloseable;
         }
 
         public void CloseCurrentScreen()

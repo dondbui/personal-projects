@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace core.ui.screens
 {
-    public class TitleScreen : MonoBehaviour
+    public class TitleScreen : BaseScreenComponent
     {
         private const string BTN_NEWGAME = "NewGame";
         private const string BTN_CONTINUE = "Continue";
@@ -20,6 +20,9 @@ namespace core.ui.screens
 
         public void Start()
         {
+            // This guy is not closeable from the Screen Queue since it is the title screen
+            base.isCloseable = false;
+
             ScreenQueueManager.GetInstance().ShowScreenNow(this.gameObject);
 
             anim = GetComponent<Animator>();

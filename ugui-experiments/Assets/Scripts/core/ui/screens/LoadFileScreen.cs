@@ -8,7 +8,7 @@ namespace core.ui.screens
     /// <summary>
     /// Handles the functionality of the load file selection screen.
     /// </summary>
-    public class LoadFileScreen : MonoBehaviour
+    public class LoadFileScreen : BaseScreenComponent
     {
         private GridLayoutGroup gridLayoutGroup;
 
@@ -35,11 +35,6 @@ namespace core.ui.screens
                     GetNewSaveFileButton(DateTime.MinValue, DateTime.MinValue, 9, "");
                 }
             }
-        }
-
-        public void OnDestroy()
-        {
-            ScreenQueueManager.GetInstance().ShowNextScreen();
         }
 
         public void Close()

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace core.ui.screens
 {
-    public class ConfirmScreen : MonoBehaviour
+    public class ConfirmScreen : BaseScreenComponent
     {
         public delegate void ChoiceCallback();
 
@@ -65,12 +65,12 @@ namespace core.ui.screens
             CloseScreen();
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             btnYes.onClick.RemoveAllListeners();
             btnNo.onClick.RemoveAllListeners();
 
-            ScreenQueueManager.GetInstance().ShowNextScreen();
+            base.OnDestroy();
         }
 
         private void CloseScreen()

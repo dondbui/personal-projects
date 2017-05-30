@@ -17,7 +17,10 @@ namespace core
         // Update is called once per frame
         public void Update()
         {
-            inputController.Update();
+            if (inputController != null)
+            {
+                inputController.Update();
+            }
         }
     }
 }
