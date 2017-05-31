@@ -1,4 +1,5 @@
-﻿using core.ui.screens;
+﻿using core.events;
+using core.ui.screens;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,6 +21,9 @@ namespace core.ui
         private ScreenQueueManager()
         {
             screenStack = new LinkedList<GameObject>();
+
+            // Add this to the EventController to listen for escape presses
+            EventController.GetInstance().RegisterForEvent(EventTypeEnum.EscapePressed, OnEscapePressed);
         }
 
         public static ScreenQueueManager GetInstance()
@@ -106,6 +110,14 @@ namespace core.ui
         {
             screen.SetActive(true);
             CurrentScreen = screen;
+        }
+
+        private void OnEscapePressed(object obj)
+        {
+            if (CanCloseScreen())
+            {
+                CloseCurrentScreen();
+            }
         }
     }
 }

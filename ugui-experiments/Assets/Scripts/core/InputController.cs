@@ -1,4 +1,5 @@
-﻿using core.ui;
+﻿using core.events;
+using core.ui;
 using UnityEngine;
 
 namespace core
@@ -48,11 +49,7 @@ namespace core
         {
             Debug.Log("Escape Key Pressed");
 
-            ScreenQueueManager sqm = ScreenQueueManager.GetInstance();
-            if (sqm.CanCloseScreen())
-            {
-                sqm.CloseCurrentScreen();
-            }
+            EventController.GetInstance().FireEvent(EventTypeEnum.EscapePressed, null);
         }
     }
 }
